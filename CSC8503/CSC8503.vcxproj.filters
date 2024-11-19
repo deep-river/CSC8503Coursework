@@ -1,63 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\CMakeFiles\CSC8503.dir\cmake_pch.cxx">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\cmake_pch.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\GameTechRenderer.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\Main.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\NetworkPlayer.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\NetworkedGame.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkedGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\StateGameObject.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\StateGameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\CSC8503\TutorialGame.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\TutorialGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\GameTechRenderer.h">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\NetworkPlayer.h">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\NetworkedGame.h">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkedGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\StateGameObject.h">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\StateGameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\TutorialGame.h">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\TutorialGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx">
       <Filter>Precompile Header File</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\CSC8503\CMakeFiles\CSC8503.dir\Release\cmake_pch.hxx">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\Release\cmake_pch.hxx">
       <Filter>Precompile Header File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Dev\CSC8503 Code 2024\CSC8503\CMakeLists.txt" />
+    <CustomBuild Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{427EDB81-E3E5-3E7F-A7B3-1B199709C2E2}</UniqueIdentifier>
+      <UniqueIdentifier>{E6BC3883-90FF-37B8-ADCD-471E524642A8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Precompile Header File">
-      <UniqueIdentifier>{C575F2E4-14DE-3CF0-A7C9-22E459145D8B}</UniqueIdentifier>
+      <UniqueIdentifier>{C2FA67AF-6861-37D7-BE0F-887410F64F19}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{87BC299C-390D-32AA-9993-D10F68A3F9A3}</UniqueIdentifier>
+      <UniqueIdentifier>{747C3D6C-AD75-393C-9ADF-E09469EA458B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

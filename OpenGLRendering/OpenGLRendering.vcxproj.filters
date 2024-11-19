@@ -1,69 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\cmake_pch.cxx">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\cmake_pch.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLTexture.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLTexture.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLShader.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLShader.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLRenderer.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLRenderer.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLMesh.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLMesh.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLComputeShader.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLComputeShader.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLTexture.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLShader.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLRenderer.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLMesh.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\OGLComputeShader.cpp">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\OGLComputeShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\glad\gl.h">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\glad\gl.h">
       <Filter>GLAD</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\glad\gl.c">
+    <ClCompile Include="C:\Dev\CSC8503Coursework\OpenGLRendering\glad\gl.c">
       <Filter>GLAD</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\Debug\cmake_pch.hxx">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\Debug\cmake_pch.hxx">
       <Filter>Precompile Header File</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\Release\cmake_pch.hxx">
+    <ClInclude Include="C:\Dev\CSC8503Coursework\OpenGLRendering\CMakeFiles\OpenGLRendering.dir\Release\cmake_pch.hxx">
       <Filter>Precompile Header File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Dev\CSC8503 Code 2024\OpenGLRendering\CMakeLists.txt" />
+    <CustomBuild Include="C:\Dev\CSC8503Coursework\OpenGLRendering\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="GLAD">
-      <UniqueIdentifier>{52DDA98D-6071-30C2-8356-FDD3A561E05D}</UniqueIdentifier>
+      <UniqueIdentifier>{A13EE379-41EE-3DB7-97B8-4E4DCA2D1F39}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{427EDB81-E3E5-3E7F-A7B3-1B199709C2E2}</UniqueIdentifier>
+      <UniqueIdentifier>{E6BC3883-90FF-37B8-ADCD-471E524642A8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Precompile Header File">
-      <UniqueIdentifier>{C575F2E4-14DE-3CF0-A7C9-22E459145D8B}</UniqueIdentifier>
+      <UniqueIdentifier>{C2FA67AF-6861-37D7-BE0F-887410F64F19}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{87BC299C-390D-32AA-9993-D10F68A3F9A3}</UniqueIdentifier>
+      <UniqueIdentifier>{747C3D6C-AD75-393C-9ADF-E09469EA458B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
