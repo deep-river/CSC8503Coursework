@@ -1,4 +1,4 @@
-#include "CollisionDetection.h"
+﻿#include "CollisionDetection.h"
 #include "CollisionVolume.h"
 #include "AABBVolume.h"
 #include "OBBVolume.h"
@@ -86,15 +86,28 @@ bool CollisionDetection::RayBoxIntersection(const Ray&r, const Vector3& boxPos, 
 }
 
 bool CollisionDetection::RayAABBIntersection(const Ray&r, const Transform& worldTransform, const AABBVolume& volume, RayCollision& collision) {
-	// todo: implement this
-	
-	return false;
+	Vector3 boxPos = worldTransform.GetPosition();
+	Vector3 boxSize = volume.GetHalfDimensions();
+
+	return RayBoxIntersection(r, boxPos, boxSize, collision);
 }
 
 bool CollisionDetection::RayOBBIntersection(const Ray&r, const Transform& worldTransform, const OBBVolume& volume, RayCollision& collision) {
-	// todo: implement this
+	Quaternion orientation = worldTransform.GetOrientation();
+	Vector3 position = worldTransform.GetPosition();
+
+	Matrix3 transform = Quaternion::RotationMatrix<Matrix3>(orientation);
+	Matrix3 invTransform = Quaternion::RotationMatrix<Matrix3>(orientation.Conjugate());
+
+	Vector3 localRayPos = r.GetPosition() - position;
+	Ray tempRay(invTransform * localRayPos, invTransform * r.GetDirection());
 	
-	return false;
+	bool collided = RayBoxIntersection(tempRay, Vector3(), volume.GetHalfDimensions(), collision);
+
+	if (collided) {
+		collision.collidedAt = transform * collision.collidedAt + position;
+	}
+	return collided;
 }
 
 bool CollisionDetection::RaySphereIntersection(const Ray&r, const Transform& worldTransform, const SphereVolume& volume, RayCollision& collision) {

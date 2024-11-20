@@ -1,4 +1,4 @@
-#include "TutorialGame.h"
+﻿#include "TutorialGame.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
 #include "RenderObject.h"
@@ -113,6 +113,7 @@ void TutorialGame::UpdateGame(float dt) {
 	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
 
 	RayCollision closestCollision;
+	// 按下K键后寻找rayDir方向上距离选中对象最近的物体
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::K) && selectionObject) {
 		Vector3 rayPos;
 		Vector3 rayDir;
@@ -133,7 +134,7 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 	}
 
-	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
 	SelectObject();
 	MoveSelectedObject();
@@ -484,6 +485,7 @@ bool TutorialGame::SelectObject() {
 		Debug::Print("Press Q to change to camera mode!", Vector2(5, 85));
 
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::Left)) {
+			// 选中另一个对象时，将上一个选中对象设回默认颜色
 			if (selectionObject) {	//set colour to deselected;
 				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
 				selectionObject = nullptr;
@@ -493,6 +495,7 @@ bool TutorialGame::SelectObject() {
 
 			RayCollision closestCollision;
 			if (world->Raycast(ray, closestCollision, true)) {
+				Debug::DrawLine(ray.GetPosition(), closestCollision.collidedAt, Vector4(1, 0, 0, 1), 5.0f);
 				selectionObject = (GameObject*)closestCollision.node;
 
 				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
