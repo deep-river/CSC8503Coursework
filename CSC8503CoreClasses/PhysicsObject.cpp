@@ -40,6 +40,7 @@ void PhysicsObject::AddTorque(const Vector3& addedTorque) {
 	torque += addedTorque;
 }
 
+// Zero out any forces, so that they are only applied once
 void PhysicsObject::ClearForces() {
 	force				= Vector3();
 	torque				= Vector3();
