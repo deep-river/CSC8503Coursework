@@ -281,19 +281,16 @@ bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Trans
 bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	
-	Vector3 sphereAPos = worldTransformA.GetPosition();
-	Vector3 sphereBPos = worldTransformB.GetPosition();
-	float totalSize = volumeA.GetRadius() + volumeB.GetRadius();
-	
-	Vector3 delta = sphereBPos - sphereAPos;
-	float distanceSquared = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
+	float radii = volumeA.GetRadius() + volumeB.GetRadius();
+	Vector3 delta = worldTransformB.GetPosition() - worldTransformA.GetPosition();
+	float deltaLength = Vector::Length(delta);
 
-	if (distanceSquared < totalSize * totalSize) {
-		float distance = sqrt(distanceSquared);
-		float penetration = totalSize - distance;
-
-		Vector3 normal = delta / distance;
-		collisionInfo.AddContactPoint(Vector3(), Vector3(), normal, penetration);
+	if (deltaLength < radii) {
+		float penetration	= (radii - deltaLength);
+		Vector3 normal		= Vector::Normalise(delta);
+		Vector3 localA		= normal * volumeA.GetRadius();
+		Vector3 localB		= -normal * volumeB.GetRadius();
+		collisionInfo.AddContactPoint(localA, localB, normal, penetration);
 		return true;
 	}
 	
@@ -303,6 +300,22 @@ bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const T
 //AABB - Sphere Collision
 bool CollisionDetection::AABBSphereIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	Vector3 boxSize = volumeA.GetHalfDimensions();
+	Vector3 delta = worldTransformB.GetPosition() - worldTransformA.GetPosition();
+	Vector3 closestPointOnBox = Vector::Clamp(delta, -boxSize, boxSize);
+	Vector3 localPoint = delta - closestPointOnBox;
+	float distance = Vector::Length(localPoint); //distance from sphere's origin to closest point
+
+	if (distance < volumeB.GetRadius()) {
+		Vector3 collisionNormal = Vector::Normalise(localPoint);
+		float penetration = (volumeB.GetRadius() - distance);
+		Vector3 localA = Vector3();
+		Vector3 localB = -collisionNormal * volumeB.GetRadius();
+		collisionInfo.AddContactPoint(localA, localB, collisionNormal, penetration);
+		return true;
+	}
+
 	return false;
 }
 
