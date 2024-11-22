@@ -29,6 +29,14 @@ namespace NCL {
 				return linearDamping;
 			}
 
+			void SetAngularDamping(float d) {
+				angularDamping = d;
+			}
+
+			float GetAngularDamping() const {
+				return angularDamping;
+			}
+
 		protected:
 			void BasicCollisionDetection();
 			void BroadPhase();
@@ -60,6 +68,7 @@ namespace NCL {
 			int numCollisionFrames	= 5;
 
 			float linearDamping = 0.4f;
+			float angularDamping = 0.4f;
 		};
 	}
 }

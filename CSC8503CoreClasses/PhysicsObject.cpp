@@ -66,6 +66,14 @@ void PhysicsObject::InitSphereInertia() {
 	inverseInertia	= Vector3(i, i, i);
 }
 
+void PhysicsObject::InitHollowSphereInertia() {
+
+	float radius	= Vector::GetMaxElement(transform->GetScale());
+	float i			= 1.5f * inverseMass / (radius * radius);
+
+	inverseInertia	 = Vector3(i, i, i);
+}
+
 void PhysicsObject::UpdateInertiaTensor() {
 	Quaternion q = transform->GetOrientation();
 
