@@ -234,12 +234,69 @@ bool CollisionDetection::AABBTest(const Vector3& posA, const Vector3& posB, cons
 //AABB/AABB Collisions
 bool CollisionDetection::AABBIntersection(const AABBVolume& volumeA, const Transform& worldTransformA,
 	const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	Vector3 boxAPos = worldTransformA.GetPosition();
+	Vector3 boxBPos = worldTransformB.GetPosition();
+
+	Vector3 boxASize = volumeA.GetHalfDimensions();
+	Vector3 boxBSize = volumeB.GetHalfDimensions();
+	
+	bool overlap = AABBTest(boxAPos, boxBPos, boxASize, boxBSize);
+	if (overlap) {
+		static const Vector3 faces[6] = {
+			Vector3(-1, 0, 0), Vector3(1, 0, 0),
+			Vector3(0, -1, 0), Vector3(0, 1, 0),
+			Vector3(0, 0, -1), Vector3(0, 0, 1)
+		};
+		Vector3 maxA = boxAPos + boxASize;
+		Vector3 minA = boxAPos - boxASize;
+		Vector3 maxB = boxBPos + boxBSize;
+		Vector3 minB = boxBPos - boxBSize;
+
+		float distances[6] = {
+			(maxB.x - minA.x), //distance of box B to the left of box A
+			(maxA.x - minB.x), //distance of box B to the right of box A
+			(maxB.y - minA.y), //distance of box B below box A
+			(maxA.y - minB.y), //distance of box B above box A
+			(maxB.z - minA.z), //distance of box B behind box A
+			(maxA.z - minB.z)  //distance of box B in front of box A
+		};
+		float penetration = FLT_MAX;
+		Vector3 bestAxis;
+
+		for (int i = 0; i < 6; i++) {
+			if (distances[i] < penetration) {
+				penetration = distances[i];
+				bestAxis = faces[i];
+			}
+		}
+		collisionInfo.AddContactPoint(Vector3(), Vector3(), bestAxis, penetration);
+		return true;
+	}
+	
 	return false;
 }
 
 //Sphere / Sphere Collision
 bool CollisionDetection::SphereIntersection(const SphereVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	Vector3 sphereAPos = worldTransformA.GetPosition();
+	Vector3 sphereBPos = worldTransformB.GetPosition();
+	float totalSize = volumeA.GetRadius() + volumeB.GetRadius();
+	
+	Vector3 delta = sphereBPos - sphereAPos;
+	float distanceSquared = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
+
+	if (distanceSquared < totalSize * totalSize) {
+		float distance = sqrt(distanceSquared);
+		float penetration = totalSize - distance;
+
+		Vector3 normal = delta / distance;
+		collisionInfo.AddContactPoint(Vector3(), Vector3(), normal, penetration);
+		return true;
+	}
+	
 	return false;
 }
 

@@ -544,6 +544,7 @@ void TutorialGame::MoveSelectedObject() {
 	}
 	//Push the selected object!
 	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::Right)) {
+		std::cout << "Pushing Object" << std::endl;
 		Ray ray = CollisionDetection::BuildRayFromMouse(world->GetMainCamera());
 
 		RayCollision closestCollision;
