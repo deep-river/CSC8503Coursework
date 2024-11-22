@@ -160,6 +160,7 @@ bool CollisionDetection::ObjectIntersection(GameObject* a, GameObject* b, Collis
 	Transform& transformA = a->GetTransform();
 	Transform& transformB = b->GetTransform();
 
+	//Bitwise OR. Yields the object type if the two objects are of the same type
 	VolumeType pairType = (VolumeType)((int)volA->type | (int)volB->type);
 
 	//Two AABBs
