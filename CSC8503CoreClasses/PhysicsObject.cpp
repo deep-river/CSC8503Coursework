@@ -11,6 +11,7 @@ PhysicsObject::PhysicsObject(Transform* parentTransform, const CollisionVolume* 
 	inverseMass = 1.0f;
 	elasticity	= 0.8f;
 	friction	= 0.8f;
+	springConstant = 150.0f;
 }
 
 PhysicsObject::~PhysicsObject()	{
@@ -34,6 +35,12 @@ void PhysicsObject::AddForceAtPosition(const Vector3& addedForce, const Vector3&
 
 	force  += addedForce;
 	torque += Vector::Cross(localPos, addedForce);
+}
+
+void PhysicsObject::AddForceAtRelativePosition(const Vector3& addedForce, const Vector3& position)
+{
+	force += addedForce;
+	torque += Vector::Cross(position, addedForce);
 }
 
 void PhysicsObject::AddTorque(const Vector3& addedTorque) {

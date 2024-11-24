@@ -208,6 +208,7 @@ void PhysicsSystem::BasicCollisionDetection() {
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
 				std::cout << "Collision between " << (*i)->GetName() << " and " << (*j)->GetName() << std::endl;
 				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				//ResolveSpringCollision(*info.a, *info.b, info.point);
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -245,14 +246,16 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
 	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
 
-	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
+	Vector3 contactVelocity = fullVelocityB - fullVelocityA; //Vr
 	//Caluculate impulse vector J
-	float impulseForce = Vector::Dot(contactVelocity, p.normal);
+	float impulseForce = Vector::Dot(contactVelocity, p.normal); //Vr dot n
 	Vector3 inertiaA = Vector::Cross(physA->GetInertiaTensor() * Vector::Cross(relativeA, p.normal), relativeA);
 	Vector3 inertiaB = Vector::Cross(physB->GetInertiaTensor() * Vector::Cross(relativeB, p.normal), relativeB);
 	float angularEffect = Vector::Dot(inertiaA + inertiaB, p.normal);
-	float cRestitution = 0.66f; //Coefficient of restitution
+	//float cRestitution = 0.66f; //Coefficient of restitution
+	float cRestitution = physA->GetElasticity() * physB->GetElasticity();
 	float j = (-(1.0f + cRestitution) * impulseForce) / (totalMass + angularEffect);
+	//std::cout << "Impulse collision force: " << j << std::endl;
 	Vector3 fullImpulse = p.normal * j;
 
 	physA->ApplyLinearImpulse(-fullImpulse);
@@ -262,6 +265,49 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 
 }
 
+void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
+	/*PhysicsObject* physA = a.GetPhysicsObject();
+	PhysicsObject* physB = b.GetPhysicsObject();
+	Transform& transformA = a.GetTransform();
+	Transform& transformB = b.GetTransform();
+	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
+
+	if (totalMass == 0.0f) {
+		return;
+	}
+
+	Vector3 relativeA = p.localA;
+	Vector3 relativeB = p.localB;
+	Vector3 angVelocityA = Vector::Cross(physA->GetAngularVelocity(), relativeA);
+	Vector3 angVelocityB = Vector::Cross(physB->GetAngularVelocity(), relativeB);
+	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
+	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
+
+	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
+	float impulseForce = Vector::Dot(contactVelocity, p.normal);
+
+	Vector3 t = contactVelocity - (p.normal * impulseForce);
+	Vector3 normalT = Vector::Normalise(t);
+
+	Vector3 inertiaA = Vector::Cross(physA->GetInertiaTensor() * Vector::Cross(relativeA, normalT), relativeA);
+	Vector3 inertiaB = Vector::Cross(physB->GetInertiaTensor() * Vector::Cross(relativeB, normalT), relativeB);
+	float angularEffect = Vector::Dot(inertiaA + inertiaB, normalT);
+
+	float springCoefficient = 1.0f;
+	float j = -(springCoefficient * Vector::Dot(contactVelocity, normalT)) / (totalMass + angularEffect);
+	std::cout << "Spring collision force: " << j << std::endl;
+	Vector3 fullImpulse = p.normal * j;
+
+	physA->AddForceAtPosition(-fullImpulse, p.localA);
+	physB->AddForceAtPosition(fullImpulse, p.localB);*/
+	PhysicsObject* physA = a.GetPhysicsObject();
+	PhysicsObject* physB = b.GetPhysicsObject();
+
+	Vector3 direction = p.normal * p.penetration;
+
+	physA->AddForceAtRelativePosition(-direction * physA->GetSpringConstant(), p.localA);
+	physB->AddForceAtRelativePosition(direction * physB->GetSpringConstant(), p.localB);
+}
 /*
 
 Later, we replace the BasicCollisionDetection method with a broadphase

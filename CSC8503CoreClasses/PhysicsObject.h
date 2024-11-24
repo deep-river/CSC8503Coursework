@@ -42,6 +42,7 @@ namespace NCL {
 			void AddForce(const Vector3& force);
 
 			void AddForceAtPosition(const Vector3& force, const Vector3& position);
+			void AddForceAtRelativePosition(const Vector3& force, const Vector3& position);
 
 			void AddTorque(const Vector3& torque);
 
@@ -66,6 +67,22 @@ namespace NCL {
 				return inverseInteriaTensor;
 			}
 
+			void SetElasticity(float e) {
+				elasticity = e;
+			}
+
+			float GetElasticity() const {
+				return elasticity;
+			}
+
+			void SetSpringConstant(float k) {
+				springConstant = k;
+			}
+
+			float GetSpringConstant() const {
+				return springConstant;
+			}
+
 		protected:
 			const CollisionVolume* volume;
 			Transform*		transform;
@@ -73,6 +90,7 @@ namespace NCL {
 			float inverseMass;
 			float elasticity;
 			float friction;
+			float springConstant;
 
 			//linear stuff
 			Vector3 linearVelocity;
