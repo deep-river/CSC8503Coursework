@@ -300,6 +300,7 @@ void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, Collisi
 
 	physA->AddForceAtPosition(-fullImpulse, p.localA);
 	physB->AddForceAtPosition(fullImpulse, p.localB);*/
+
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
 

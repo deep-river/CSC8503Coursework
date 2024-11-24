@@ -11,7 +11,7 @@ PhysicsObject::PhysicsObject(Transform* parentTransform, const CollisionVolume* 
 	inverseMass = 1.0f;
 	elasticity	= 0.8f;
 	friction	= 0.8f;
-	springConstant = 150.0f;
+	springConstant = 15.0f;
 }
 
 PhysicsObject::~PhysicsObject()	{
