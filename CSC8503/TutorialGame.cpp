@@ -265,7 +265,9 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 
-	InitMixedGridWorld(15, 15, 3.5f, 3.5f);
+	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
+
+	BridgeConstraintTest();
 
 	InitGameExamples();
 	InitDefaultFloor();
@@ -426,11 +428,9 @@ void TutorialGame::InitDefaultFloor() {
 }
 
 void TutorialGame::InitGameExamples() {
-	//AddPlayerToWorld(Vector3(0, 5, 0));
-	//AddEnemyToWorld(Vector3(5, 5, 0));
-	//AddBonusToWorld(Vector3(10, 5, 0));
-
-	BridgeConstraintTest();
+	AddPlayerToWorld(Vector3(0, 5, 0));
+	AddEnemyToWorld(Vector3(5, 5, 0));
+	AddBonusToWorld(Vector3(10, 5, 0));
 }
 
 void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {
@@ -559,6 +559,7 @@ void TutorialGame::MoveSelectedObject() {
 }
 
 void TutorialGame::BridgeConstraintTest() {
+	std::cout << "Bridge constraint test begin" << std::endl;
 	Vector3 cubeSize = Vector3(8, 8, 8);
 
 	float invCubeMass = 5;
@@ -566,7 +567,7 @@ void TutorialGame::BridgeConstraintTest() {
 	float maxDistance = 30;
 	float cubeDistance = 20;
 
-	Vector3 startPos = Vector3(500, 500, 500);
+	Vector3 startPos = Vector3(-120, 120, 0);
 
 	GameObject* start = AddCubeToWorld(startPos + Vector3(0, 0, 0), cubeSize, 0);
 	GameObject* end = AddCubeToWorld(startPos + Vector3((numLinks + 2) * cubeDistance, 0, 0), cubeSize, 0);
