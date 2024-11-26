@@ -575,11 +575,17 @@ void TutorialGame::BridgeConstraintTest() {
 
 	for (int i = 0; i < numLinks; ++i) {
 		GameObject* block = AddCubeToWorld(startPos + Vector3((i + 1) * cubeDistance, 0, 0), cubeSize, invCubeMass);
-		PositionConstraint* constraint = new PositionConstraint(previous, block, maxDistance);
-		world->AddConstraint(constraint);
+		PositionConstraint* positionConstraint = new PositionConstraint(previous, block, maxDistance);
+		OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, block, PI / 4.0f); //旋转约束为45度
+
+		world->AddConstraint(positionConstraint);
+		world->AddConstraint(orientationConstraint);
 		previous = block;
 	}
-	PositionConstraint* constraint = new PositionConstraint(previous, end, maxDistance);
-	world->AddConstraint(constraint);
+	PositionConstraint* positionConstraint = new PositionConstraint(previous, end, maxDistance);
+	OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, end, PI / 4.0f); //旋转约束为45度
+	
+	world->AddConstraint(positionConstraint);
+	world->AddConstraint(orientationConstraint);
 }
 

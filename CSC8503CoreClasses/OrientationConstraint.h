@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Constraint.h"
 
 namespace NCL {
@@ -8,7 +8,7 @@ namespace NCL {
 		class OrientationConstraint : public Constraint
 		{
 		public:
-			OrientationConstraint(GameObject* a, GameObject* b);
+			OrientationConstraint(GameObject* a, GameObject* b, float angle);
 			~OrientationConstraint();
 
 			void UpdateConstraint(float dt) override;
@@ -17,7 +17,8 @@ namespace NCL {
 			GameObject* objectA;
 			GameObject* objectB;
 
-			float distance;
+			//float distance;
+			float maxRotationRadians; // 最大允许旋转角度，例如：PI / 2.0f 为90度
 		};
 	}
 }
