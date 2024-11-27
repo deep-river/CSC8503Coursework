@@ -1,4 +1,4 @@
-#include "PhysicsSystem.h"
+﻿#include "PhysicsSystem.h"
 #include "PhysicsObject.h"
 #include "GameObject.h"
 #include "CollisionDetection.h"
@@ -309,16 +309,40 @@ void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, Collisi
 	physA->AddForceAtRelativePosition(-direction * physA->GetSpringConstant(), p.localA);
 	physB->AddForceAtRelativePosition(direction * physB->GetSpringConstant(), p.localB);
 }
+
 /*
-
-Later, we replace the BasicCollisionDetection method with a broadphase
-and a narrowphase collision detection method. In the broad phase, we
-split the world up using an acceleration structure, so that we can only
-compare the collisions that we absolutely need to. 
-
+构建四叉树，遍历场景中的对象并逐个插入树中
+然后通过OperateOnContents方法，传入匿名函数，遍历树的节点并将可能的碰撞对象插入broadphaseCollisions集合中
+这里没有直接检测碰撞，broadphaseCollisions会在随后被用于NarrowPhase
 */
 void PhysicsSystem::BroadPhase() {
+	broadphaseCollisions.clear();
+	QuadTree<GameObject*> tree(Vector2(1024, 1024), 7, 6);
 
+	std::vector<GameObject*>::const_iterator first;
+	std::vector<GameObject*>::const_iterator last;
+	gameWorld.GetObjectIterators(first, last);
+	for (auto i = first; i != last; ++i) {
+		Vector3 halfSizes;
+		if (!(*i)->GetBroadphaseAABB(halfSizes)) {
+			continue;
+		}
+		Vector3 pos = (*i)->GetTransform().GetPosition();
+		tree.Insert(*i, pos, halfSizes);
+	}
+	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
+		// data为匿名函数的参数，匿名函数前的[&]表示按引用捕获所有外部作用域内的变量，
+		// lambda内部将获得一个指向外部变量的引用，所以对这些按引用捕获的变量进行修改时，
+		// 会影响到原始的外部变量。因此，使用[&]可以直接修改i局部变量的原始值
+		CollisionDetection::CollisionInfo info;
+		for (auto i = data.begin(); i != data.end(); ++i) {
+			for (auto j = std::next(i); j != data.end(); ++j) {
+				info.a = std::min((*i).object, (*j).object);
+				info.b = std::max((*i).object, (*j).object);
+				broadphaseCollisions.insert(info);
+			}
+		}
+	});
 }
 
 /*
