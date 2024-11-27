@@ -51,7 +51,7 @@ namespace NCL {
 					}
 				}
 				else {
-					contents.push_back(QuadTreeEntry<T>(object, objeectPos, objectSize));
+					contents.push_back(QuadTreeEntry<T>(object, objectPos, objectSize));
 					//如果当前节点存储的内容超过最大值，且深度大于0，则进行分裂
 					if ((int)contents.size() > maxSize && depthLeft > 0) {
 						if (!children) {
