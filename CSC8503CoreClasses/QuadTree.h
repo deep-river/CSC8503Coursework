@@ -51,7 +51,7 @@ namespace NCL {
 					}
 				}
 				else {
-					contents.push_back(QuadTreeEntry<T>(object, objectPos, objectSize));
+					contents.push_back(QuadTreeEntry<T>(object, objeectPos, objectSize));
 					//如果当前节点存储的内容超过最大值，且深度大于0，则进行分裂
 					if ((int)contents.size() > maxSize && depthLeft > 0) {
 						if (!children) {
@@ -117,8 +117,8 @@ namespace NCL {
 		public:
 			QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5){
 				root = QuadTreeNode<T>(Vector2(), size);
-				this->maxDepth = maxDepth; //允许分裂的最大深度
-				this->maxSize = maxSize;  //每个节点允许存储的最大对象数量
+				this->maxDepth	= maxDepth;
+				this->maxSize	= maxSize;
 			}
 			~QuadTree() {
 			}
