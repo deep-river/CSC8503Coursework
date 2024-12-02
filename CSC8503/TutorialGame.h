@@ -92,6 +92,9 @@ namespace NCL {
 			}
 
 			GameObject* objClosest = nullptr;
+
+			StateGameObject* AddStateObjectToWorld(const Vector3& position);
+			StateGameObject* testStateObject;
 		};
 	}
 }

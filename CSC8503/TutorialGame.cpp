@@ -38,6 +38,8 @@ TutorialGame::TutorialGame() : controller(*Window::GetWindow()->GetKeyboard(), *
 	controller.MapAxis(3, "XLook");
 	controller.MapAxis(4, "YLook");
 
+	testStateObject = nullptr;
+
 	InitialiseAssets();
 }
 
@@ -99,6 +101,10 @@ void TutorialGame::UpdateGame(float dt) {
 		world->GetMainCamera().SetPosition(camPos);
 		world->GetMainCamera().SetPitch(angles.x);
 		world->GetMainCamera().SetYaw(angles.y);
+	}
+
+	if (testStateObject) {
+		testStateObject->Update(dt);
 	}
 
 	UpdateKeys();
@@ -267,7 +273,9 @@ void TutorialGame::InitWorld() {
 
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
 
-	BridgeConstraintTest();
+	BridgeConstraintTest(); //重力吊桥物理约束测试
+
+	testStateObject = AddStateObjectToWorld(Vector3(0, 10, 0)); //简单状态机对象测试
 
 	InitGameExamples();
 	InitDefaultFloor();
@@ -410,6 +418,26 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 	apple->SetBoundingVolume((CollisionVolume*)volume);
 	apple->GetTransform()
 		.SetScale(Vector3(2, 2, 2))
+		.SetPosition(position);
+
+	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
+	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
+
+	apple->GetPhysicsObject()->SetInverseMass(1.0f);
+	apple->GetPhysicsObject()->InitSphereInertia();
+
+	world->AddGameObject(apple);
+
+	return apple;
+}
+
+StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
+	StateGameObject* apple = new StateGameObject();
+
+	SphereVolume* volume = new SphereVolume(0.5f);
+	apple->SetBoundingVolume((CollisionVolume*)volume);
+	apple->GetTransform()
+		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(position);
 
 	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
