@@ -351,7 +351,17 @@ The broadphase will now only give us likely collisions, so we can now go through
 and work out if they are truly colliding, and if so, add them into the main collision list
 */
 void PhysicsSystem::NarrowPhase() {
-
+	for (std::set<CollisionDetection::CollisionInfo>::iterator 
+		i = broadphaseCollisions.begin();
+		i != broadphaseCollisions.end(); ++i) {
+		CollisionDetection::CollisionInfo info = *i;
+		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
+			//std::cout << "Narrowphase collision between " << info.a->GetName() << " and " << info.b->GetName() << std::endl;
+			ImpulseResolveCollision(*info.a, *info.b, info.point);
+			info.framesLeft = numCollisionFrames;
+			allCollisions.insert(info);
+		}
+	}
 }
 
 /*
