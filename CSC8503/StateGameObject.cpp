@@ -9,7 +9,7 @@ using namespace CSC8503;
 
 StateGameObject::StateGameObject() {
 	counter = 0.0f;
-
+	moveSpeed = 50.0f;
 	waypoints.clear();
 	currentWaypointIndex = 0;
 
@@ -31,6 +31,10 @@ StateGameObject::StateGameObject() {
 	stateMachine->AddTransition(new StateTransition(stateB, stateA, [&]()->bool {
 		return this->counter < -2.0f;
 	}));
+
+	State* stateMoveAlongWaypoints = new State([&](float dt)->void {
+		this->MoveToWaypoint(dt);
+	});
 }
 
 StateGameObject::~StateGameObject() {
@@ -61,7 +65,10 @@ bool StateGameObject::IsNearWaypoint(Vector3& point, float threshold) {
 }
 
 void StateGameObject::MoveToWaypoint(float dt) {
-	if (waypoints.empty()) return;
+	if (waypoints.empty()) {
+		std::cout << "Waypoints vector is empty! Exit move mode." << std::endl;
+		return;
+	}
 
 	Vector3 toPoint = waypoints[currentWaypointIndex] - GetTransform().GetPosition();
 
@@ -70,5 +77,5 @@ void StateGameObject::MoveToWaypoint(float dt) {
 	}
 
 	Vector3 direction = Vector::Normalise(toPoint);
-	GetPhysicsObject()->AddForce(direction);
+	GetPhysicsObject()->AddForce(direction * moveSpeed);
 }

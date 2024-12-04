@@ -21,6 +21,7 @@ namespace NCL {
 
             StateMachine* stateMachine;
             float counter;
+            float moveSpeed;
 
             std::vector<Vector3> waypoints;
             size_t currentWaypointIndex;
