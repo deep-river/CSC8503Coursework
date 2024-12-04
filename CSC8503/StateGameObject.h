@@ -11,12 +11,19 @@ namespace NCL {
 
             virtual void Update(float dt);
 
+            void AddWaypoint(Vector3& waypoint);
+			bool IsNearWaypoint(Vector3& point, float threshold = 10.0f);
+			void MoveToWaypoint(float dt);
+
         protected:
             void MoveLeft(float dt);
             void MoveRight(float dt);
 
             StateMachine* stateMachine;
             float counter;
+
+            std::vector<Vector3> waypoints;
+            size_t currentWaypointIndex;
         };
     }
 }

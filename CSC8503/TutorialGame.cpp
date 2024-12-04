@@ -103,6 +103,7 @@ void TutorialGame::UpdateGame(float dt) {
 		world->GetMainCamera().SetYaw(angles.y);
 	}
 
+	//简单状态机对象
 	if (testStateObject) {
 		testStateObject->Update(dt);
 	}

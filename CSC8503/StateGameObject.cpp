@@ -9,6 +9,10 @@ using namespace CSC8503;
 
 StateGameObject::StateGameObject() {
 	counter = 0.0f;
+
+	waypoints.clear();
+	currentWaypointIndex = 0;
+
 	stateMachine = new StateMachine();
 
 	State* stateA = new State([&](float dt)->void {
@@ -45,4 +49,26 @@ void StateGameObject::MoveLeft(float dt) {
 void StateGameObject::MoveRight(float dt) {
 	GetPhysicsObject()->AddForce({ 100,0,0 });
 	counter -= dt;
+}
+
+void StateGameObject::AddWaypoint(Vector3& waypoint) {
+	waypoints.push_back(waypoint);
+}
+
+bool StateGameObject::IsNearWaypoint(Vector3& point, float threshold) {
+	Vector3 toPoint = point - GetTransform().GetPosition();
+	return Vector::Length(toPoint) < threshold;
+}
+
+void StateGameObject::MoveToWaypoint(float dt) {
+	if (waypoints.empty()) return;
+
+	Vector3 toPoint = waypoints[currentWaypointIndex] - GetTransform().GetPosition();
+
+	if (IsNearWaypoint(waypoints[currentWaypointIndex], 1.0f)) {
+		currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.size();
+	}
+
+	Vector3 direction = Vector::Normalise(toPoint);
+	GetPhysicsObject()->AddForce(direction);
 }
