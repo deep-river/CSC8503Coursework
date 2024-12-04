@@ -11,7 +11,7 @@ public:
 			BehaviourState nodeState = i->Execute(dt);
 			switch (nodeState) {
 				case Success: continue;
-				case Failure:
+				case Failure: //Returns immediately if failure 
 				case Ongoing:
 				{
 					currentState = nodeState;
