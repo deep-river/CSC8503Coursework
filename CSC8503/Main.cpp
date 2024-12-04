@@ -1,4 +1,4 @@
-#include "Window.h"
+ï»¿#include "Window.h"
 
 #include "Debug.h"
 
@@ -223,9 +223,9 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	//TestStateMachine(); //²âÊÔ¼òµ¥×´Ì¬»ú
-	//TestPathfinding(); //²âÊÔ¶şÎ¬GridÑ°Â·
-	TestBehaviourTree(); //²âÊÔ¼òµ¥ĞĞÎªÊ÷
+	//TestStateMachine(); //æµ‹è¯•ç®€å•çŠ¶æ€æœº
+	//TestPathfinding(); //æµ‹è¯•äºŒç»´Gridå¯»è·¯
+	TestBehaviourTree(); //æµ‹è¯•ç®€å•è¡Œä¸ºæ ‘
 
 	TutorialGame* g = new TutorialGame();
 	w->GetTimer().GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
@@ -250,7 +250,7 @@ int main() {
 
 		g->UpdateGame(dt);
 
-		//DisplayPathfinding(); //²âÊÔ¶şÎ¬GridÑ°Â·
+		//DisplayPathfinding(); //æµ‹è¯•äºŒç»´Gridå¯»è·¯
 	}
 	Window::DestroyGameWindow();
 }
