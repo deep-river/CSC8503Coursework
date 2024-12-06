@@ -12,7 +12,8 @@
 #include "NavigationGrid.h"
 #include "NavigationMesh.h"
 
-#include "TutorialGame.h"
+//#include "TutorialGame.h"
+#include "GameScene01.h"
 #include "NetworkedGame.h"
 
 #include "PushdownMachine.h"
@@ -227,7 +228,8 @@ int main() {
 	//TestPathfinding(); //测试二维Grid寻路
 	//TestBehaviourTree(); //测试简单行为树
 
-	TutorialGame* g = new TutorialGame(); //测试场景
+	//TutorialGame* g = new TutorialGame(); //测试场景
+	GameScene01* g = new GameScene01(); //测试场景
 	w->GetTimer().GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyCodes::ESCAPE)) {
 		float dt = w->GetTimer().GetTimeDeltaSeconds();

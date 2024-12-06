@@ -635,7 +635,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503CoreClasses\CMakeFiles\CSC8503CoreClasses.dir\Debug\cmake_pch.hxx" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503CoreClasses\CMakeFiles\CSC8503CoreClasses.dir\Release\cmake_pch.hxx" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="C:\Dev\CSC8503Coursework\ZERO_CHECK.vcxproj">
       <Project>{B7B96DF4-1771-36E3-A0BA-20DF92FEDB14}</Project>
