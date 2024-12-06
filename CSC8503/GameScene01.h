@@ -1,4 +1,4 @@
-#include "../NCLCoreClasses/KeyboardMouseController.h"
+ï»¿#include "../NCLCoreClasses/KeyboardMouseController.h"
 
 #pragma once
 #include "GameTechRenderer.h"
@@ -86,7 +86,7 @@ namespace NCL {
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;
-			Vector3 lockedOffset = Vector3(0, 5, 10); //Ïà»úËø¶¨¾àÀë
+			Vector3 lockedOffset = Vector3(0, 5, -10); //ç›¸æœºé”å®šåç§»ä½ç½®
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
 			}
@@ -94,7 +94,8 @@ namespace NCL {
 			GameObject* objClosest = nullptr;
 
 			GameObject* player;
-			float playerMoveSpeed = 100.0f; //½ÇÉ«ÒÆ¶¯ËÙ¶È
+			float playerMoveSpeed = 50.0f; //è§’è‰²ç§»åŠ¨é€Ÿåº¦
+			Vector3 playerSpawnPos = Vector3(0, -10, 0); //è§’è‰²ç”Ÿæˆä½ç½®
 		};
 	}
 }

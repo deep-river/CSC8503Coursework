@@ -1,4 +1,4 @@
-#include "GameScene01.h"
+﻿#include "GameScene01.h"
 #include "GameWorld.h"
 #include "PhysicsObject.h"
 #include "RenderObject.h"
@@ -136,20 +136,25 @@ void GameScene01::UpdatePlayer(float dt) {
 	// Move the object based on keyboard input
 	Vector3 movement(0, 0, 0);
 	if (Window::GetKeyboard()->KeyDown(KeyCodes::W)) {
-		movement += forward;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::S)) {
 		movement -= forward;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::A)) {
-		movement -= right;
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::S)) {
+		movement += forward;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::D)) {
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::A)) {
 		movement += right;
 	}
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::D)) {
+		movement -= right;
+	}
 
-	// Normalize and scale the movement
-	if (Vector::Length(movement) > 0) {
+	if (Vector::Length(movement) == 0) {
+		//当输入的合成方向为0，即玩家松开按键时，将角色的水平速度设置为零，避免松开按键后仍惯性移动
+		//注意Y轴速度保持不变，避免角色不受重力影响悬空
+		float currrentYSpeed = player->GetPhysicsObject()->GetLinearVelocity().y;
+		player->GetPhysicsObject()->SetLinearVelocity(Vector3(0, currrentYSpeed, 0));
+	} else if (Vector::Length(movement) > 0) {
+		// Normalize and scale the movement
 		Vector::Normalise(movement);
 		movement *= playerMoveSpeed * dt;
 		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
@@ -159,8 +164,8 @@ void GameScene01::UpdatePlayer(float dt) {
 	Vector3 camPos = objPos + (objOrientation * lockedOffset);
 
 	world->GetMainCamera().SetPosition(camPos);
-	//world->GetMainCamera().SetPitch(0); //���������Y���ƶ�
-	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y);
+	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
+	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);
 }
 
 void GameScene01::InitCamera() {
@@ -177,7 +182,7 @@ void GameScene01::InitWorld() {
 
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
 
-	//BridgeConstraintTest(); //������������Լ������
+	//BridgeConstraintTest(); //重力吊桥物理约束测试
 
 	InitGameExamples();
 	InitDefaultFloor();
@@ -231,7 +236,7 @@ GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius,
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//���ɿ��Ļ�ʵ������
+	//生成空心或实心球体
 	if (isHollow) {
 		sphere->GetPhysicsObject()->InitHollowSphereInertia();
 	}
@@ -338,7 +343,7 @@ void GameScene01::InitDefaultFloor() {
 }
 
 void GameScene01::InitGameExamples() {
-	player = AddPlayerToWorld(Vector3(0, 5, 0));
+	player = AddPlayerToWorld(playerSpawnPos);
 	AddEnemyToWorld(Vector3(5, 5, 0));
 	AddBonusToWorld(Vector3(10, 5, 0));
 }
@@ -398,14 +403,14 @@ void GameScene01::BridgeConstraintTest() {
 	for (int i = 0; i < numLinks; ++i) {
 		GameObject* block = AddCubeToWorld(startPos + Vector3((i + 1) * cubeDistance, 0, 0), cubeSize, invCubeMass);
 		PositionConstraint* positionConstraint = new PositionConstraint(previous, block, maxDistance);
-		OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, block, PI / 4.0f); //��תԼ��Ϊ45��
+		OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, block, PI / 4.0f); //旋转约束为45度
 
 		world->AddConstraint(positionConstraint);
 		world->AddConstraint(orientationConstraint);
 		previous = block;
 	}
 	PositionConstraint* positionConstraint = new PositionConstraint(previous, end, maxDistance);
-	OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, end, PI / 4.0f); //��תԼ��Ϊ45��
+	OrientationConstraint* orientationConstraint = new OrientationConstraint(previous, end, PI / 4.0f); //旋转约束为45度
 
 	world->AddConstraint(positionConstraint);
 	world->AddConstraint(orientationConstraint);
