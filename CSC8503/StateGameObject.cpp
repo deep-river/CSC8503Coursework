@@ -26,10 +26,10 @@ StateGameObject::StateGameObject() {
 	stateMachine->AddState(stateB);
 
 	stateMachine->AddTransition(new StateTransition(stateA, stateB, [&]()->bool {
-		return this->counter > 2.0f;
+		return this->counter > 1.0f;
 	}));
 	stateMachine->AddTransition(new StateTransition(stateB, stateA, [&]()->bool {
-		return this->counter < -2.0f;
+		return this->counter < -1.0f;
 	}));
 
 	State* stateMoveAlongWaypoints = new State([&](float dt)->void {

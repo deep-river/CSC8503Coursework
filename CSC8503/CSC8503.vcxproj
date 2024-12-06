@@ -206,6 +206,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkedGame.h" />
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\PlayerObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\StateGameObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\TutorialGame.h" />
     <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.cpp">
@@ -224,6 +225,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\PlayerObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\StateGameObject.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
@@ -235,6 +240,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\Release\cmake_pch.hxx" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="C:\Dev\CSC8503Coursework\ZERO_CHECK.vcxproj">
       <Project>{B7B96DF4-1771-36E3-A0BA-20DF92FEDB14}</Project>

@@ -83,6 +83,76 @@ TutorialGame::~TutorialGame()	{
 	delete world;
 }
 
+//void TutorialGame::UpdateGame(float dt) {
+//	if (!inSelectionMode) {
+//		world->GetMainCamera().UpdateCamera(dt);
+//	}
+//	if (lockedObject != nullptr) {
+//		Vector3 objPos = lockedObject->GetTransform().GetPosition();
+//		Vector3 camPos = objPos + lockedOffset;
+//
+//		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0,1,0));
+//
+//		Matrix4 modelMat = Matrix::Inverse(temp);
+//
+//		Quaternion q(modelMat);
+//		Vector3 angles = q.ToEuler(); //nearly there now!
+//
+//		world->GetMainCamera().SetPosition(camPos);
+//		world->GetMainCamera().SetPitch(angles.x);
+//		world->GetMainCamera().SetYaw(angles.y);
+//	}
+//
+//	//简单状态机对象
+//	if (testStateObject) {
+//		testStateObject->Update(dt);
+//	}
+//
+//	UpdateKeys();
+//
+//	if (useGravity) {
+//		Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
+//	}
+//	else {
+//		Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
+//	}
+//	//This year we can draw debug textures as well!
+//	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
+//
+//	RayCollision closestCollision;
+//	// 按下K键后寻找rayDir方向上距离选中对象最近的物体
+//	if (Window::GetKeyboard()->KeyPressed(KeyCodes::K) && selectionObject) {
+//		Vector3 rayPos;
+//		Vector3 rayDir;
+//
+//		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);
+//
+//		rayPos = selectionObject->GetTransform().GetPosition();
+//
+//		Ray r = Ray(rayPos, rayDir);
+//
+//		if (world->Raycast(r, closestCollision, true, selectionObject)) {
+//			if (objClosest) {
+//				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+//			}
+//			objClosest = (GameObject*)closestCollision.node;
+//
+//			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
+//		}
+//	}
+//
+//	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
+//
+//	SelectObject();
+//	MoveSelectedObject();
+//
+//	world->UpdateWorld(dt);
+//	renderer->Update(dt);
+//	physics->Update(dt);
+//
+//	renderer->Render();
+//	Debug::UpdateRenderables(dt);
+//}
 void TutorialGame::UpdateGame(float dt) {
 	if (!inSelectionMode) {
 		world->GetMainCamera().UpdateCamera(dt);
@@ -91,16 +161,17 @@ void TutorialGame::UpdateGame(float dt) {
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
 		Vector3 camPos = objPos + lockedOffset;
 
-		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0,1,0));
+		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
 
 		Matrix4 modelMat = Matrix::Inverse(temp);
 
 		Quaternion q(modelMat);
 		Vector3 angles = q.ToEuler(); //nearly there now!
 
+		world->GetMainCamera().UpdateCamera(dt);
 		world->GetMainCamera().SetPosition(camPos);
-		world->GetMainCamera().SetPitch(angles.x);
-		world->GetMainCamera().SetYaw(angles.y);
+		//world->GetMainCamera().SetPitch(angles.x);
+		//world->GetMainCamera().SetYaw(angles.y);
 	}
 
 	//简单状态机对象
@@ -118,30 +189,6 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 	//This year we can draw debug textures as well!
 	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
-
-	RayCollision closestCollision;
-	// 按下K键后寻找rayDir方向上距离选中对象最近的物体
-	if (Window::GetKeyboard()->KeyPressed(KeyCodes::K) && selectionObject) {
-		Vector3 rayPos;
-		Vector3 rayDir;
-
-		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);
-
-		rayPos = selectionObject->GetTransform().GetPosition();
-
-		Ray r = Ray(rayPos, rayDir);
-
-		if (world->Raycast(r, closestCollision, true, selectionObject)) {
-			if (objClosest) {
-				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-			}
-			objClosest = (GameObject*)closestCollision.node;
-
-			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
-		}
-	}
-
-	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
 	SelectObject();
 	MoveSelectedObject();
@@ -208,12 +255,14 @@ void TutorialGame::LockedObjectMovement() {
 	fwdAxis.y = 0.0f;
 	fwdAxis = Vector::Normalise(fwdAxis);
 
+	selectionObject->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(0, world->GetMainCamera().GetYaw(), 0)); //锁定对象跟随镜头转动
+
 	if (Window::GetKeyboard()->KeyDown(KeyCodes::UP)) {
-		selectionObject->GetPhysicsObject()->AddForce(fwdAxis);
+		selectionObject->GetPhysicsObject()->ApplyLinearImpulse(fwdAxis * playerMoveSpeed);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyCodes::DOWN)) {
-		selectionObject->GetPhysicsObject()->AddForce(-fwdAxis);
+		selectionObject->GetPhysicsObject()->ApplyLinearImpulse(-fwdAxis * playerMoveSpeed);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyCodes::NEXT)) {
@@ -274,9 +323,9 @@ void TutorialGame::InitWorld() {
 
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
 
-	BridgeConstraintTest(); //重力吊桥物理约束测试
+	//BridgeConstraintTest(); //重力吊桥物理约束测试
 
-	testStateObject = AddStateObjectToWorld(Vector3(0, 10, 0)); //简单状态机对象移动测试
+	testStateObject = AddStateObjectToWorld(Vector3(0, 10, 5)); //简单状态机对象移动测试
 
 	InitGameExamples();
 	InitDefaultFloor();
