@@ -45,13 +45,6 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 	std::cout << ">>>>>>>>>>>>Scene: GameScene01 begin!<<<<<<<<<<<<" << std::endl;
 }
 
-/*
-
-Each of the little demo scenarios used in the game uses the same 2 meshes,
-and the same texture and shader. There's no need to ever load in anything else
-for this module, even in the coursework, but you can add it if you like!
-
-*/
 void GameScene01::InitialiseAssets() {
 	cubeMesh = renderer->LoadMesh("cube.msh");
 	sphereMesh = renderer->LoadMesh("sphere.msh");
@@ -145,16 +138,13 @@ void GameScene01::UpdatePlayer(float dt) {
 	if (!player) {
 		return;
 	}
-
 	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
-	//std::cout << "Yaw: " << yaw << std::endl;
 	player->GetTransform().SetOrientation(player->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
 
 	Quaternion objOrientation = player->GetTransform().GetOrientation();
 	Vector3 forward = objOrientation * Vector3(0, 0, -1);
 	Vector3 right = objOrientation * Vector3(1, 0, 0);
-
-	// Move the object based on keyboard input
+	//player movement
 	Vector3 movement(0, 0, 0);
 	if (Window::GetKeyboard()->KeyDown(KeyCodes::W)) {
 		movement -= forward;
@@ -245,20 +235,12 @@ void GameScene01::InitCamera() {
 void GameScene01::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
-
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
-
 	//BridgeConstraintTest(); //重力吊桥物理约束测试
-
 	InitGameExamples();
 	InitDefaultFloor();
 }
 
-/*
-
-A single function to add a large immoveable cube to the bottom of our world
-
-*/
 GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
 	GameObject* floor = new GameObject();
 
@@ -280,13 +262,6 @@ GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
 	return floor;
 }
 
-/*
-
-Builds a game object that uses a sphere mesh for its graphics, and a bounding sphere for its
-rigid body representation. This and the cube function will let you build a lot of 'simple'
-physics worlds. You'll probably need another function for the creation of OBB cubes too.
-
-*/
 GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool isHollow) {
 	GameObject* sphere = new GameObject();
 
