@@ -28,6 +28,10 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 	forceMagnitude = 10.0f;
 	useGravity = true;
 
+	gameTimer = gameDuration;
+	isGameOver = false;
+	showMenu = false;
+
 	world->GetMainCamera().SetController(controller);
 
 	controller.MapAxis(0, "Sidestep");
@@ -76,48 +80,65 @@ GameScene01::~GameScene01() {
 	delete basicTex;
 	delete basicShader;
 
+	delete player;
+
 	delete physics;
 	delete renderer;
 	delete world;
 }
 
 void GameScene01::UpdateGame(float dt) {
-	if (player != nullptr) {
-		Vector3 objPos = player->GetTransform().GetPosition();
-		Vector3 camPos = objPos + lockedOffset;
+	if (!isGameOver) {
+		if (showMenu) {
+			RenderMenu();
+		}
+		else {
+			if (player != nullptr) {
+				Vector3 objPos = player->GetTransform().GetPosition();
+				Vector3 camPos = objPos + lockedOffset;
 
-		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
+				Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
+				Matrix4 modelMat = Matrix::Inverse(temp);
 
-		Matrix4 modelMat = Matrix::Inverse(temp);
+				Quaternion q(modelMat);
+				Vector3 angles = q.ToEuler(); //nearly there now!
 
-		Quaternion q(modelMat);
-		Vector3 angles = q.ToEuler(); //nearly there now!
+				physics->UseGravity(useGravity);
 
-		physics->UseGravity(useGravity);
+				world->GetMainCamera().UpdateCamera(dt);
+				world->GetMainCamera().SetPosition(camPos);
+				//world->GetMainCamera().SetPitch(angles.x);
+				//world->GetMainCamera().SetYaw(angles.y);
+			}
+			UpdateGameTimer(dt);
+			UpdatePlayer(dt);
+			UpdateGameUI();
+			//This year we can draw debug textures as well!
+			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
+			world->UpdateWorld(dt);
+			physics->Update(dt);
 
-		world->GetMainCamera().UpdateCamera(dt);
-		world->GetMainCamera().SetPosition(camPos);
-		//world->GetMainCamera().SetPitch(angles.x);
-		//world->GetMainCamera().SetYaw(angles.y);
+		}
+	} else {
+		RenderGameOverScreen();
 	}
-
-	UpdatePlayer(dt);
-
-	if (useGravity) {
-		Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
-	}
-	else {
-		Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
-	}
-	//This year we can draw debug textures as well!
-	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
-
-	world->UpdateWorld(dt);
+	UpdateKeys();
 	renderer->Update(dt);
-	physics->Update(dt);
-
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
+}
+
+void GameScene01::UpdateKeys() {
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::ESCAPE)) {
+		showMenu = !showMenu;
+	}
+}
+
+void GameScene01::UpdateGameTimer(float dt) {
+	gameTimer -= dt;
+	if (gameTimer <= 0) {
+		isGameOver = true;
+	}
 }
 
 void GameScene01::UpdatePlayer(float dt) {
@@ -166,6 +187,51 @@ void GameScene01::UpdatePlayer(float dt) {
 	world->GetMainCamera().SetPosition(camPos);
 	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
 	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);
+}
+
+void GameScene01::UpdateGameUI() {
+	if (!isGameOver) {
+		Debug::Print("GameScene01", Vector2(50, 5), Debug::WHITE);
+		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
+		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
+		Debug::Print("Score: " + std::to_string(playerScore), Vector2(2, 10), Debug::YELLOW);
+	}
+}
+
+void GameScene01::RenderMenu() {
+	Debug::Print("Menu", Vector2(40, 40), Debug::WHITE);
+	Debug::Print("1. Play Again", Vector2(40, 45), Debug::WHITE);
+	Debug::Print("2. Exit Game", Vector2(40, 50), Debug::WHITE);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
+		// Reset game state
+		gameTimer = gameDuration;
+		playerScore = 0;
+		isGameOver = false;
+		showMenu = false;
+		InitWorld();
+	}
+	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
+		exit(0);
+	}
+}
+
+void GameScene01::RenderGameOverScreen() {
+	Debug::Print("Game Over!", Vector2(40, 35), Debug::RED);
+	Debug::Print("Final Score: " + std::to_string(playerScore), Vector2(40, 40), Debug::YELLOW);
+	Debug::Print("1. Play Again", Vector2(40, 50), Debug::WHITE);
+	Debug::Print("2. Exit Game", Vector2(40, 55), Debug::WHITE);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
+		gameTimer = gameDuration;
+		playerScore = 0;
+		isGameOver = false;
+		showMenu = false;
+		InitWorld();
+	}
+	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
+		exit(0);
+	}
 }
 
 void GameScene01::InitCamera() {

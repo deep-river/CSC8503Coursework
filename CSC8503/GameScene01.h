@@ -21,7 +21,6 @@ namespace NCL {
 			void InitialiseAssets();
 
 			void InitCamera();
-			void UpdateKeys();
 
 			void InitWorld();
 
@@ -38,11 +37,6 @@ namespace NCL {
 
 			void InitDefaultFloor();
 
-			bool SelectObject();
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
-
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool isHollow = false); //Added isHollow parameter, true = hollow object, false = solid object
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -52,7 +46,13 @@ namespace NCL {
 			GameObject* AddBonusToWorld(const Vector3& position);
 
 			void BridgeConstraintTest();
+
 			void UpdatePlayer(float dt);
+			void UpdateGameUI();
+			void RenderMenu();
+			void RenderGameOverScreen();
+			void UpdateGameTimer(float dt);
+			void UpdateKeys();
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
@@ -91,11 +91,15 @@ namespace NCL {
 				lockedObject = o;
 			}
 
-			GameObject* objClosest = nullptr;
-
 			GameObject* player;
 			float playerMoveSpeed = 50.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(0, -10, 0); //角色生成位置
+
+			float gameTimer; //游戏剩余时间
+			float gameDuration = 60.0f; //游戏持续时间
+			int playerScore = 0; //玩家分数
+			bool isGameOver = false;
+			bool showMenu = false;
 		};
 	}
 }
