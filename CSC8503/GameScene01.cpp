@@ -27,7 +27,6 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 
 	forceMagnitude = 10.0f;
 	useGravity = true;
-	inSelectionMode = false;
 
 	world->GetMainCamera().SetController(controller);
 
@@ -83,11 +82,8 @@ GameScene01::~GameScene01() {
 }
 
 void GameScene01::UpdateGame(float dt) {
-	if (!inSelectionMode) {
-		world->GetMainCamera().UpdateCamera(dt);
-	}
-	if (lockedObject != nullptr) {
-		Vector3 objPos = lockedObject->GetTransform().GetPosition();
+	if (player != nullptr) {
+		Vector3 objPos = player->GetTransform().GetPosition();
 		Vector3 camPos = objPos + lockedOffset;
 
 		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
@@ -125,7 +121,7 @@ void GameScene01::UpdateGame(float dt) {
 }
 
 void GameScene01::UpdatePlayer(float dt) {
-	if (!player || !lockedObject) {
+	if (!player) {
 		return;
 	}
 
@@ -173,7 +169,6 @@ void GameScene01::InitCamera() {
 	world->GetMainCamera().SetPitch(-15.0f);
 	world->GetMainCamera().SetYaw(315.0f);
 	world->GetMainCamera().SetPosition(Vector3(-60, 40, 60));
-	lockedObject = player; // camera look at
 }
 
 void GameScene01::InitWorld() {
