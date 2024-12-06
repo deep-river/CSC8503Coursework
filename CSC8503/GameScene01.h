@@ -94,7 +94,7 @@ namespace NCL {
 			GameObject* objClosest = nullptr;
 
 			GameObject* player;
-			float playerMoveSpeed = 0.5f; //角色移动速度
+			float playerMoveSpeed = 100.0f; //角色移动速度
 		};
 	}
 }
