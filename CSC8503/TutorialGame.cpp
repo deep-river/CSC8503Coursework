@@ -63,8 +63,8 @@ void TutorialGame::InitialiseAssets() {
 	basicTex	= renderer->LoadTexture("checkerboard.png");
 	basicShader = renderer->LoadShader("scene.vert", "scene.frag");
 
-	InitCamera();
 	InitWorld();
+	InitCamera();
 }
 
 TutorialGame::~TutorialGame()	{
@@ -265,7 +265,7 @@ void TutorialGame::InitCamera() {
 	world->GetMainCamera().SetPitch(-15.0f);
 	world->GetMainCamera().SetYaw(315.0f);
 	world->GetMainCamera().SetPosition(Vector3(-60, 40, 60));
-	lockedObject = nullptr;
+	lockedObject = nullptr; // camera look at
 }
 
 void TutorialGame::InitWorld() {
@@ -276,7 +276,7 @@ void TutorialGame::InitWorld() {
 
 	BridgeConstraintTest(); //重力吊桥物理约束测试
 
-	testStateObject = AddStateObjectToWorld(Vector3(0, 10, 0)); //简单状态机对象测试
+	testStateObject = AddStateObjectToWorld(Vector3(0, 10, 0)); //简单状态机对象移动测试
 
 	InitGameExamples();
 	InitDefaultFloor();
@@ -457,7 +457,7 @@ void TutorialGame::InitDefaultFloor() {
 }
 
 void TutorialGame::InitGameExamples() {
-	AddPlayerToWorld(Vector3(0, 5, 0));
+	player = AddPlayerToWorld(Vector3(0, 5, 0));
 	AddEnemyToWorld(Vector3(5, 5, 0));
 	AddBonusToWorld(Vector3(10, 5, 0));
 }

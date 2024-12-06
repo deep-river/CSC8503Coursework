@@ -95,6 +95,8 @@ namespace NCL {
 
 			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 			StateGameObject* testStateObject;
+
+			GameObject* player;
 		};
 	}
 }

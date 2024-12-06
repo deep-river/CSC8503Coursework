@@ -225,9 +225,9 @@ int main() {
 
 	//TestStateMachine(); //测试简单状态机
 	//TestPathfinding(); //测试二维Grid寻路
-	TestBehaviourTree(); //测试简单行为树
+	//TestBehaviourTree(); //测试简单行为树
 
-	TutorialGame* g = new TutorialGame();
+	TutorialGame* g = new TutorialGame(); //测试场景
 	w->GetTimer().GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyCodes::ESCAPE)) {
 		float dt = w->GetTimer().GetTimeDeltaSeconds();
