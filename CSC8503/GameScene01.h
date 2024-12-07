@@ -86,10 +86,12 @@ namespace NCL {
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;
-			Vector3 lockedOffset = Vector3(0, 5, -10); //相机锁定偏移位置
+			Vector3 lockedOffset = Vector3(0, 5, -10); //相机对跟踪对象的位置偏移量
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
 			}
+
+			float cameraDistance = -10.0f; //相机与跟踪对象的距离
 
 			GameObject* player;
 			float playerMoveSpeed = 50.0f; //角色移动速度

@@ -170,7 +170,10 @@ void GameScene01::UpdatePlayer(float dt) {
 		movement *= playerMoveSpeed * dt;
 		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
 	}
-
+	//鼠标滚轮调整相机与角色之间的跟踪距离（目前只调整了Z轴距离）
+	cameraDistance += Window::GetMouse()->GetWheelMovement() * 1.0f;
+	cameraDistance = std::min(-5.0f, std::max(cameraDistance, -15.0f)); // Clamp between 5 and 20
+	lockedOffset.z = cameraDistance;
 	Vector3 objPos = player->GetTransform().GetPosition();
 	Vector3 camPos = objPos + (objOrientation * lockedOffset);
 
