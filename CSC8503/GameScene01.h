@@ -94,9 +94,10 @@ namespace NCL {
 			}
 
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离
+			float cameraHeight = 5.0f; //相机高度
 
 			GameObject* player;
-			float playerMoveSpeed = 50.0f; //角色移动速度
+			float playerMoveSpeed = 30.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
 			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
 
