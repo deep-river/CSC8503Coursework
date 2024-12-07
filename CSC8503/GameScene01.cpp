@@ -240,8 +240,9 @@ void GameScene01::InitWorld() {
 	physics->Clear();
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
 	//BridgeConstraintTest(); //重力吊桥物理约束测试
+	InitTerrain(20, 20, 10.0f);
 	InitGameExamples();
-	InitDefaultFloor();
+	//InitDefaultFloor();
 }
 
 GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
@@ -386,10 +387,39 @@ void GameScene01::InitDefaultFloor() {
 	AddFloorToWorld(Vector3(0, -20, 0));
 }
 
+void GameScene01::InitTerrain(int width, int height, float cellSize) {
+	AddFloorToWorld(Vector3(0, -1, 0));
+
+	// Define the size of a single terrain block
+	float blockSize = 10.0f;
+
+	// Create terrain blocks
+	// 1. Create a U-shaped path
+	for (int i = 0; i < 10; ++i) {
+		AddCubeToWorld(Vector3(-40 + i * blockSize, 5, -40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+		AddCubeToWorld(Vector3(-40 + i * blockSize, 5, 40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+	}
+	for (int i = 0; i < 8; ++i) {
+		AddCubeToWorld(Vector3(50, 5, -30 + i * blockSize), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+	}
+
+	// 2. Create some obstacles and decorative elements
+	AddCubeToWorld(Vector3(0, 7.5, 0), Vector3(blockSize, 15, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.3f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(-30, 10, 0), Vector3(blockSize, 20, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(30, 12.5, 0), Vector3(blockSize, 25, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.3f, 0.7f, 1.0f));
+
+	// 3. Create open areas for items
+	// Left open area
+	AddCubeToWorld(Vector3(-30, 2.5, -30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.7f, 0.3f, 1.0f));
+	// Right open area
+	AddCubeToWorld(Vector3(30, 2.5, 30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
+}
+
 void GameScene01::InitGameExamples() {
 	player = AddPlayerToWorld(playerSpawnPos);
-	AddEnemyToWorld(Vector3(5, 5, 0));
-	AddBonusToWorld(Vector3(10, 5, 0));
+	player->GetRenderObject()->SetColour(playerColour);
+	//AddEnemyToWorld(Vector3(5, 5, 0));
+	//AddBonusToWorld(Vector3(10, 5, 0));
 }
 
 void GameScene01::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {

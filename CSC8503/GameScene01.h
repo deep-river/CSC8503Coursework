@@ -54,6 +54,8 @@ namespace NCL {
 			void UpdateGameTimer(float dt);
 			void UpdateKeys();
 
+			void InitTerrain(int width, int height, float cellSize);
+
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
 #else
@@ -95,7 +97,8 @@ namespace NCL {
 
 			GameObject* player;
 			float playerMoveSpeed = 50.0f; //角色移动速度
-			Vector3 playerSpawnPos = Vector3(0, -10, 0); //角色生成位置
+			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
+			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
 
 			float gameTimer; //游戏剩余时间
 			float gameDuration = 60.0f; //游戏持续时间
