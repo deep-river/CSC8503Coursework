@@ -48,6 +48,7 @@ namespace NCL {
 			void BridgeConstraintTest();
 
 			void UpdatePlayer(float dt);
+			void UpdateCamera();
 			void UpdateGameUI();
 			void RenderMenu();
 			void RenderGameOverScreen();
@@ -69,8 +70,6 @@ namespace NCL {
 			bool useGravity;
 			bool inSelectionMode;
 
-			float		forceMagnitude;
-
 			GameObject* selectionObject = nullptr;
 
 			Mesh* capsuleMesh = nullptr;
@@ -86,13 +85,7 @@ namespace NCL {
 			Mesh* enemyMesh = nullptr;
 			Mesh* bonusMesh = nullptr;
 
-			//Coursework Additional functionality	
-			GameObject* lockedObject = nullptr;
 			Vector3 lockedOffset = Vector3(0, 5, -10); //相机对跟踪对象的位置偏移量
-			void LockCameraToObject(GameObject* o) {
-				lockedObject = o;
-			}
-
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离
 			float cameraHeight = 5.0f; //相机高度
 
@@ -102,7 +95,7 @@ namespace NCL {
 			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
 
 			float gameTimer; //游戏剩余时间
-			float gameDuration = 60.0f; //游戏持续时间
+			float gameDuration = 60.0f; //每局游戏持续时间
 			int playerScore = 0; //玩家分数
 			bool isGameOver = false;
 			bool showMenu = false;

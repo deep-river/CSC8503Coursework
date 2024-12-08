@@ -24,8 +24,6 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 #endif
 
 	physics = new PhysicsSystem(*world);
-
-	forceMagnitude = 10.0f;
 	useGravity = true;
 
 	gameTimer = gameDuration;
@@ -37,7 +35,6 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 	controller.MapAxis(0, "Sidestep");
 	controller.MapAxis(1, "UpDown");
 	controller.MapAxis(2, "Forward");
-
 	controller.MapAxis(3, "XLook");
 	controller.MapAxis(4, "YLook");
 
@@ -105,6 +102,7 @@ void GameScene01::UpdateGame(float dt) {
 			}
 			UpdateGameTimer(dt);
 			UpdatePlayer(dt);
+			UpdateCamera();
 			UpdateGameUI();
 			//This year we can draw debug textures as well!
 			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
@@ -115,6 +113,7 @@ void GameScene01::UpdateGame(float dt) {
 	} else {
 		RenderGameOverScreen();
 	}
+
 	UpdateKeys();
 	renderer->Update(dt);
 	renderer->Render();
@@ -135,9 +134,8 @@ void GameScene01::UpdateGameTimer(float dt) {
 }
 
 void GameScene01::UpdatePlayer(float dt) {
-	if (!player) {
-		return;
-	}
+	if (!player) return;
+
 	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
 	player->GetTransform().SetOrientation(player->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
 
@@ -170,12 +168,18 @@ void GameScene01::UpdatePlayer(float dt) {
 		movement *= playerMoveSpeed * dt;
 		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
 	}
-	//鼠标滚轮调整相机与角色之间的跟踪距离（目前只调整了Z轴距离）
+}
+
+void GameScene01::UpdateCamera() {
+	if (!player) return;
+	Quaternion objOrientation = player->GetTransform().GetOrientation();
+	//鼠标滚轮调整相机与角色之间的跟踪距离
 	float moveWheelMovement = Window::GetMouse()->GetWheelMovement();
 	cameraDistance += moveWheelMovement * 1.0f;
-	cameraDistance = std::min(-5.0f, std::max(cameraDistance, -15.0f)); // Clamp between 5 and 20
+	cameraDistance = std::min(-5.0f, std::max(cameraDistance, -15.0f)); // Clamp
 	cameraHeight -= moveWheelMovement * 0.5f;
-	cameraHeight = std::max(2.5f, std::min(cameraHeight, 7.5f));
+	cameraHeight = std::max(2.5f, std::min(cameraHeight, 7.5f)); // Clamp
+
 	lockedOffset.y = cameraHeight;
 	lockedOffset.z = cameraDistance;
 	Vector3 objPos = player->GetTransform().GetPosition();
@@ -244,9 +248,9 @@ void GameScene01::InitWorld() {
 	physics->Clear();
 	//InitMixedGridWorld(15, 15, 3.5f, 3.5f);
 	//BridgeConstraintTest(); //重力吊桥物理约束测试
+	//InitDefaultFloor();
 	InitTerrain(20, 20, 10.0f);
 	InitGameExamples();
-	//InitDefaultFloor();
 }
 
 GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
@@ -255,16 +259,12 @@ GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
 	Vector3 floorSize = Vector3(200, 2, 200);
 	AABBVolume* volume = new AABBVolume(floorSize);
 	floor->SetBoundingVolume((CollisionVolume*)volume);
-	floor->GetTransform()
-		.SetScale(floorSize * 2.0f)
-		.SetPosition(position);
+	floor->GetTransform().SetScale(floorSize * 2.0f).SetPosition(position);
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
-
 	floor->GetPhysicsObject()->SetInverseMass(0);
 	floor->GetPhysicsObject()->InitCubeInertia();
-
 	world->AddGameObject(floor);
 
 	return floor;
@@ -276,10 +276,7 @@ GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius,
 	Vector3 sphereSize = Vector3(radius, radius, radius);
 	SphereVolume* volume = new SphereVolume(radius);
 	sphere->SetBoundingVolume((CollisionVolume*)volume);
-
-	sphere->GetTransform()
-		.SetScale(sphereSize)
-		.SetPosition(position);
+	sphere->GetTransform().SetScale(sphereSize).SetPosition(position);
 
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
 	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
@@ -292,7 +289,6 @@ GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius,
 	else {
 		sphere->GetPhysicsObject()->InitSphereInertia();
 	}
-
 	world->AddGameObject(sphere);
 
 	return sphere;
@@ -303,17 +299,12 @@ GameObject* GameScene01::AddCubeToWorld(const Vector3& position, Vector3 dimensi
 
 	AABBVolume* volume = new AABBVolume(dimensions);
 	cube->SetBoundingVolume((CollisionVolume*)volume);
-
-	cube->GetTransform()
-		.SetPosition(position)
-		.SetScale(dimensions * 2.0f);
+	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2.0f);
 
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
 	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
-
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
 	cube->GetPhysicsObject()->InitCubeInertia();
-
 	world->AddGameObject(cube);
 
 	return cube;
@@ -327,17 +318,12 @@ GameObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
-
-	character->GetTransform()
-		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(position);
+	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
 
 	character->SetRenderObject(new RenderObject(&character->GetTransform(), catMesh, nullptr, basicShader));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-
 	world->AddGameObject(character);
 
 	return character;
@@ -352,16 +338,12 @@ GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
 	AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
 	character->SetBoundingVolume((CollisionVolume*)volume);
 
-	character->GetTransform()
-		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(position);
+	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
 
 	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-
 	world->AddGameObject(character);
 
 	return character;
@@ -372,16 +354,12 @@ GameObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 
 	SphereVolume* volume = new SphereVolume(0.5f);
 	apple->SetBoundingVolume((CollisionVolume*)volume);
-	apple->GetTransform()
-		.SetScale(Vector3(2, 2, 2))
-		.SetPosition(position);
+	apple->GetTransform().SetScale(Vector3(2, 2, 2)).SetPosition(position);
 
 	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
 	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
-
 	apple->GetPhysicsObject()->SetInverseMass(1.0f);
 	apple->GetPhysicsObject()->InitSphereInertia();
-
 	world->AddGameObject(apple);
 
 	return apple;
