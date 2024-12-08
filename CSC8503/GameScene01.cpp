@@ -310,11 +310,11 @@ GameObject* GameScene01::AddCubeToWorld(const Vector3& position, Vector3 dimensi
 	return cube;
 }
 
-GameObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
+PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	float meshSize = 1.0f;
 	float inverseMass = 0.5f;
 
-	GameObject* character = new GameObject();
+	PlayerObject* character = new PlayerObject();
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);

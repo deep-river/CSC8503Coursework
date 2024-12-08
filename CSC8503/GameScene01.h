@@ -6,7 +6,7 @@
 #include "GameTechVulkanRenderer.h"
 #endif
 #include "PhysicsSystem.h"
-
+#include "PlayerObject.h"
 #include "StateGameObject.h"
 
 namespace NCL {
@@ -41,7 +41,7 @@ namespace NCL {
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool isHollow = false); //Added isHollow parameter, true = hollow object, false = solid object
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
 
-			GameObject* AddPlayerToWorld(const Vector3& position);
+			PlayerObject* AddPlayerToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
@@ -89,7 +89,7 @@ namespace NCL {
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离
 			float cameraHeight = 5.0f; //相机高度
 
-			GameObject* player;
+			PlayerObject* player;
 			float playerMoveSpeed = 30.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
 			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
