@@ -4,6 +4,9 @@
     <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\CMakeFiles\CSC8503.dir\cmake_pch.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\CollectibleObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\GameScene01.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,6 +33,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CollectibleObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameScene01.h">
       <Filter>Header Files</Filter>
     </ClInclude>

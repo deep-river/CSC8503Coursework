@@ -8,6 +8,7 @@
 #include "PhysicsSystem.h"
 #include "PlayerObject.h"
 #include "StateGameObject.h"
+#include "CollectibleObject.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -43,7 +44,7 @@ namespace NCL {
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
-			GameObject* AddBonusToWorld(const Vector3& position);
+			CollectibleObject* AddBonusToWorld(const Vector3& position);
 
 			void BridgeConstraintTest();
 
@@ -56,6 +57,8 @@ namespace NCL {
 			void UpdateKeys();
 
 			void InitTerrain(int width, int height, float cellSize);
+
+			void UpdateCollectibles(float dt);
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
@@ -96,9 +99,11 @@ namespace NCL {
 
 			float gameTimer; //游戏剩余时间
 			float gameDuration = 60.0f; //每局游戏持续时间
-			int playerScore = 0; //玩家分数
+			//int playerScore = 0; //玩家分数
 			bool isGameOver = false;
-			bool showMenu = false;
+			bool showMenu = false; 
+			
+			std::vector<CollectibleObject*> collectibles;
 		};
 	}
 }

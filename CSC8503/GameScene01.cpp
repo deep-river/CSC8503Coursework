@@ -7,6 +7,7 @@
 #include "PositionConstraint.h"
 #include "OrientationConstraint.h"
 #include "StateGameObject.h"
+#include "CollectibleObject.h"
 
 
 
@@ -104,6 +105,7 @@ void GameScene01::UpdateGame(float dt) {
 			UpdatePlayer(dt);
 			UpdateCamera();
 			UpdateGameUI();
+			//UpdateCollectibles(dt);
 			//This year we can draw debug textures as well!
 			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
 			world->UpdateWorld(dt);
@@ -195,7 +197,7 @@ void GameScene01::UpdateGameUI() {
 		Debug::Print("GameScene01", Vector2(50, 5), Debug::WHITE);
 		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
 		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
-		Debug::Print("Score: " + std::to_string(playerScore), Vector2(2, 10), Debug::YELLOW);
+		Debug::Print("Score: " + std::to_string(player->GetScore()), Vector2(2, 10), Debug::YELLOW);
 	}
 }
 
@@ -207,7 +209,7 @@ void GameScene01::RenderMenu() {
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
 		// Reset game state
 		gameTimer = gameDuration;
-		playerScore = 0;
+		player->ResetScore();
 		isGameOver = false;
 		showMenu = false;
 		InitWorld();
@@ -219,19 +221,36 @@ void GameScene01::RenderMenu() {
 
 void GameScene01::RenderGameOverScreen() {
 	Debug::Print("Game Over!", Vector2(40, 35), Debug::RED);
-	Debug::Print("Final Score: " + std::to_string(playerScore), Vector2(40, 40), Debug::YELLOW);
+	Debug::Print("Final Score: " + std::to_string(player->GetScore()), Vector2(40, 40), Debug::YELLOW);
 	Debug::Print("1. Play Again", Vector2(40, 50), Debug::WHITE);
 	Debug::Print("2. Exit Game", Vector2(40, 55), Debug::WHITE);
 
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
 		gameTimer = gameDuration;
-		playerScore = 0;
+		player->ResetScore();
 		isGameOver = false;
 		showMenu = false;
 		InitWorld();
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
 		exit(0);
+	}
+}
+
+void GameScene01::UpdateCollectibles(float dt) {
+	for (auto it = collectibles.begin(); it != collectibles.end();) {
+		CollectibleObject* collectible = *it;
+		collectible->Update(dt);
+
+		//if (!collectible->IsActive()) {
+		//	// Remove the collectible from the world
+		//	world->RemoveGameObject(collectible, false);
+		//	delete collectible;
+		//	it = collectibles.erase(it);
+		//}
+		//else {
+		//	++it;
+		//}
 	}
 }
 
@@ -251,118 +270,6 @@ void GameScene01::InitWorld() {
 	//InitDefaultFloor();
 	InitTerrain(20, 20, 10.0f);
 	InitGameExamples();
-}
-
-GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
-	GameObject* floor = new GameObject();
-
-	Vector3 floorSize = Vector3(200, 2, 200);
-	AABBVolume* volume = new AABBVolume(floorSize);
-	floor->SetBoundingVolume((CollisionVolume*)volume);
-	floor->GetTransform().SetScale(floorSize * 2.0f).SetPosition(position);
-
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
-	floor->GetPhysicsObject()->SetInverseMass(0);
-	floor->GetPhysicsObject()->InitCubeInertia();
-	world->AddGameObject(floor);
-
-	return floor;
-}
-
-GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool isHollow) {
-	GameObject* sphere = new GameObject();
-
-	Vector3 sphereSize = Vector3(radius, radius, radius);
-	SphereVolume* volume = new SphereVolume(radius);
-	sphere->SetBoundingVolume((CollisionVolume*)volume);
-	sphere->GetTransform().SetScale(sphereSize).SetPosition(position);
-
-	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
-	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
-
-	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//生成空心或实心球体
-	if (isHollow) {
-		sphere->GetPhysicsObject()->InitHollowSphereInertia();
-	}
-	else {
-		sphere->GetPhysicsObject()->InitSphereInertia();
-	}
-	world->AddGameObject(sphere);
-
-	return sphere;
-}
-
-GameObject* GameScene01::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
-	GameObject* cube = new GameObject();
-
-	AABBVolume* volume = new AABBVolume(dimensions);
-	cube->SetBoundingVolume((CollisionVolume*)volume);
-	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2.0f);
-
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->InitCubeInertia();
-	world->AddGameObject(cube);
-
-	return cube;
-}
-
-PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
-	float meshSize = 1.0f;
-	float inverseMass = 0.5f;
-
-	PlayerObject* character = new PlayerObject();
-	SphereVolume* volume = new SphereVolume(1.0f);
-
-	character->SetBoundingVolume((CollisionVolume*)volume);
-	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
-
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), catMesh, nullptr, basicShader));
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
-	world->AddGameObject(character);
-
-	return character;
-}
-
-GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-
-	GameObject* character = new GameObject();
-
-	AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
-	character->SetBoundingVolume((CollisionVolume*)volume);
-
-	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
-
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
-	world->AddGameObject(character);
-
-	return character;
-}
-
-GameObject* GameScene01::AddBonusToWorld(const Vector3& position) {
-	GameObject* apple = new GameObject();
-
-	SphereVolume* volume = new SphereVolume(0.5f);
-	apple->SetBoundingVolume((CollisionVolume*)volume);
-	apple->GetTransform().SetScale(Vector3(2, 2, 2)).SetPosition(position);
-
-	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
-	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
-	apple->GetPhysicsObject()->SetInverseMass(1.0f);
-	apple->GetPhysicsObject()->InitSphereInertia();
-	world->AddGameObject(apple);
-
-	return apple;
 }
 
 void GameScene01::InitDefaultFloor() {
@@ -401,7 +308,7 @@ void GameScene01::InitGameExamples() {
 	player = AddPlayerToWorld(playerSpawnPos);
 	player->GetRenderObject()->SetColour(playerColour);
 	//AddEnemyToWorld(Vector3(5, 5, 0));
-	//AddBonusToWorld(Vector3(10, 5, 0));
+	AddBonusToWorld(Vector3(-130, 10, 10));
 }
 
 void GameScene01::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {
@@ -470,5 +377,118 @@ void GameScene01::BridgeConstraintTest() {
 
 	world->AddConstraint(positionConstraint);
 	world->AddConstraint(orientationConstraint);
+}
+
+GameObject* GameScene01::AddFloorToWorld(const Vector3& position) {
+	GameObject* floor = new GameObject();
+
+	Vector3 floorSize = Vector3(200, 2, 200);
+	AABBVolume* volume = new AABBVolume(floorSize);
+	floor->SetBoundingVolume((CollisionVolume*)volume);
+	floor->GetTransform().SetScale(floorSize * 2.0f).SetPosition(position);
+
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
+	floor->GetPhysicsObject()->SetInverseMass(0);
+	floor->GetPhysicsObject()->InitCubeInertia();
+	world->AddGameObject(floor);
+
+	return floor;
+}
+
+GameObject* GameScene01::AddSphereToWorld(const Vector3& position, float radius, float inverseMass, bool isHollow) {
+	GameObject* sphere = new GameObject();
+
+	Vector3 sphereSize = Vector3(radius, radius, radius);
+	SphereVolume* volume = new SphereVolume(radius);
+	sphere->SetBoundingVolume((CollisionVolume*)volume);
+	sphere->GetTransform().SetScale(sphereSize).SetPosition(position);
+
+	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
+	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
+
+	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
+	//生成空心或实心球体
+	if (isHollow) {
+		sphere->GetPhysicsObject()->InitHollowSphereInertia();
+	}
+	else {
+		sphere->GetPhysicsObject()->InitSphereInertia();
+	}
+	world->AddGameObject(sphere);
+
+	return sphere;
+}
+
+GameObject* GameScene01::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+	GameObject* cube = new GameObject();
+
+	AABBVolume* volume = new AABBVolume(dimensions);
+	cube->SetBoundingVolume((CollisionVolume*)volume);
+	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2.0f);
+
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
+	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
+	cube->GetPhysicsObject()->InitCubeInertia();
+	world->AddGameObject(cube);
+
+	return cube;
+}
+
+PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
+	float meshSize = 1.0f;
+	float inverseMass = 0.5f;
+
+	PlayerObject* character = new PlayerObject("Player");
+	SphereVolume* volume = new SphereVolume(1.0f);
+
+	character->SetBoundingVolume((CollisionVolume*)volume);
+	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
+
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), catMesh, nullptr, basicShader));
+	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+	character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	character->GetPhysicsObject()->InitSphereInertia();
+	world->AddGameObject(character);
+
+	return character;
+}
+
+GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
+	float meshSize = 3.0f;
+	float inverseMass = 0.5f;
+
+	GameObject* character = new GameObject();
+
+	AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
+	character->SetBoundingVolume((CollisionVolume*)volume);
+
+	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
+
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
+	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+	character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	character->GetPhysicsObject()->InitSphereInertia();
+	world->AddGameObject(character);
+
+	return character;
+}
+
+CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
+	CollectibleObject* item = new CollectibleObject();
+
+	SphereVolume* volume = new SphereVolume(0.5f);
+	item->SetBoundingVolume((CollisionVolume*)volume);
+	item->GetTransform().SetScale(Vector3(2, 2, 2)).SetPosition(position);
+
+	item->SetRenderObject(new RenderObject(&item->GetTransform(), bonusMesh, nullptr, basicShader));
+	item->SetPhysicsObject(new PhysicsObject(&item->GetTransform(), item->GetBoundingVolume()));
+	item->GetPhysicsObject()->SetInverseMass(1.0f);
+	item->GetPhysicsObject()->InitSphereInertia();
+
+	world->AddGameObject(item);
+	collectibles.push_back(item);
+	return item;
 }
 

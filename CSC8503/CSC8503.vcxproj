@@ -203,6 +203,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CSC8503.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CollectibleObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameScene01.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.h" />
@@ -210,6 +211,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\PlayerObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\StateGameObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\TutorialGame.h" />
+    <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\CollectibleObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="C:\Dev\CSC8503Coursework\CSC8503\GameScene01.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Dev/CSC8503Coursework/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
