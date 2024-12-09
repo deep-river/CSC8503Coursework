@@ -72,6 +72,11 @@ GameScene01::~GameScene01() {
 	delete basicShader;
 
 	delete player;
+	
+	for (auto collectible : collectibles) {
+		delete collectible;
+	}
+	collectibles.clear();
 
 	delete physics;
 	delete renderer;
@@ -105,12 +110,12 @@ void GameScene01::UpdateGame(float dt) {
 			UpdatePlayer(dt);
 			UpdateCamera();
 			UpdateGameUI();
-			//UpdateCollectibles(dt);
 			//This year we can draw debug textures as well!
 			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
 			world->UpdateWorld(dt);
 			physics->Update(dt);
 
+			UpdateCollectibles(dt);
 		}
 	} else {
 		RenderGameOverScreen();
@@ -238,19 +243,15 @@ void GameScene01::RenderGameOverScreen() {
 }
 
 void GameScene01::UpdateCollectibles(float dt) {
-	for (auto it = collectibles.begin(); it != collectibles.end();) {
-		CollectibleObject* collectible = *it;
-		collectible->Update(dt);
+	for (auto it = collectibles.begin(); it != collectibles.end(); ) {
+		(*it)->Update(dt);
 
-		//if (!collectible->IsActive()) {
-		//	// Remove the collectible from the world
-		//	world->RemoveGameObject(collectible, false);
-		//	delete collectible;
-		//	it = collectibles.erase(it);
-		//}
-		//else {
-		//	++it;
-		//}
+		if (!(*it)->IsActive()) {
+			world->RemoveGameObject(*it);
+			it = collectibles.erase(it);
+		} else {
+			++it;
+		}
 	}
 }
 

@@ -11,7 +11,7 @@ namespace NCL {
 			void Update(float dt);
 			void OnCollisionBegin(GameObject* otherObject) override;
 		protected:
-			float rotationSpeed = 2.0f; // Radians per second
+			float rotationSpeed = 40.0f;
 		};
 	}
 }

@@ -11,7 +11,7 @@ CollectibleObject::~CollectibleObject() {
 }
 
 void CollectibleObject::Update(float dt) {
-	GetTransform().SetOrientation(Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), rotationSpeed * dt));
+	GetTransform().SetOrientation(GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), rotationSpeed * dt));
 }
 
 void CollectibleObject::OnCollisionBegin(GameObject* otherObject) {

@@ -266,41 +266,6 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 }
 
 void PhysicsSystem::ResolveSpringCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
-	/*PhysicsObject* physA = a.GetPhysicsObject();
-	PhysicsObject* physB = b.GetPhysicsObject();
-	Transform& transformA = a.GetTransform();
-	Transform& transformB = b.GetTransform();
-	float totalMass = physA->GetInverseMass() + physB->GetInverseMass();
-
-	if (totalMass == 0.0f) {
-		return;
-	}
-
-	Vector3 relativeA = p.localA;
-	Vector3 relativeB = p.localB;
-	Vector3 angVelocityA = Vector::Cross(physA->GetAngularVelocity(), relativeA);
-	Vector3 angVelocityB = Vector::Cross(physB->GetAngularVelocity(), relativeB);
-	Vector3 fullVelocityA = physA->GetLinearVelocity() + angVelocityA;
-	Vector3 fullVelocityB = physB->GetLinearVelocity() + angVelocityB;
-
-	Vector3 contactVelocity = fullVelocityB - fullVelocityA;
-	float impulseForce = Vector::Dot(contactVelocity, p.normal);
-
-	Vector3 t = contactVelocity - (p.normal * impulseForce);
-	Vector3 normalT = Vector::Normalise(t);
-
-	Vector3 inertiaA = Vector::Cross(physA->GetInertiaTensor() * Vector::Cross(relativeA, normalT), relativeA);
-	Vector3 inertiaB = Vector::Cross(physB->GetInertiaTensor() * Vector::Cross(relativeB, normalT), relativeB);
-	float angularEffect = Vector::Dot(inertiaA + inertiaB, normalT);
-
-	float springCoefficient = 1.0f;
-	float j = -(springCoefficient * Vector::Dot(contactVelocity, normalT)) / (totalMass + angularEffect);
-	std::cout << "Spring collision force: " << j << std::endl;
-	Vector3 fullImpulse = p.normal * j;
-
-	physA->AddForceAtPosition(-fullImpulse, p.localA);
-	physB->AddForceAtPosition(fullImpulse, p.localB);*/
-
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
 
