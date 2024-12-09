@@ -30,7 +30,7 @@ namespace NCL {
 			in the module. Feel free to mess around with them to see different objects being created in different
 			test scenarios (constraints, collision types, and so on).
 			*/
-			void InitGameExamples();
+			void InitGameObjects();
 
 			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
 			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
@@ -95,7 +95,6 @@ namespace NCL {
 			PlayerObject* player;
 			float playerMoveSpeed = 30.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
-			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
 
 			float gameTimer; //游戏剩余时间
 			float gameDuration = 60.0f; //每局游戏持续时间
@@ -104,6 +103,9 @@ namespace NCL {
 			bool showMenu = false; 
 			
 			std::vector<CollectibleObject*> collectibles;
+
+			Vector4 playerColour = Vector4(1.0f, 0.65f, 0.18f, 1.0f); //角色颜色_橙色
+			Vector4 collectibleColour = Vector4(0.97f, 0.97f, 0.18f, 1.0f); //角色颜色_橙色
 		};
 	}
 }

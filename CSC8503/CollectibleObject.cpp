@@ -15,7 +15,7 @@ void CollectibleObject::Update(float dt) {
 }
 
 void CollectibleObject::OnCollisionBegin(GameObject* otherObject) {
-	std::cout << "Collided with " << otherObject->GetName() << std::endl;
+	//std::cout << "Collided with " << otherObject->GetName() << std::endl;
 	PlayerObject* player = dynamic_cast<PlayerObject*>(otherObject);
 	if (player) {
 		player->AddScore(1);

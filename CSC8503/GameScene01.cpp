@@ -270,7 +270,7 @@ void GameScene01::InitWorld() {
 	//BridgeConstraintTest(); //重力吊桥物理约束测试
 	//InitDefaultFloor();
 	InitTerrain(20, 20, 10.0f);
-	InitGameExamples();
+	InitGameObjects();
 }
 
 void GameScene01::InitDefaultFloor() {
@@ -305,11 +305,15 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 	AddCubeToWorld(Vector3(30, 2.5, 30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
 }
 
-void GameScene01::InitGameExamples() {
+void GameScene01::InitGameObjects() {
 	player = AddPlayerToWorld(playerSpawnPos);
-	player->GetRenderObject()->SetColour(playerColour);
 	//AddEnemyToWorld(Vector3(5, 5, 0));
+	//todo: 添加可收集物体
 	AddBonusToWorld(Vector3(-130, 10, 10));
+	AddBonusToWorld(Vector3(-130, 10, 20));
+	AddBonusToWorld(Vector3(-130, 10, 30));
+	AddBonusToWorld(Vector3(-130, 10, 40));
+	AddBonusToWorld(Vector3(-130, 10, 50));
 }
 
 void GameScene01::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {
@@ -451,8 +455,9 @@ PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-	world->AddGameObject(character);
+	character->GetRenderObject()->SetColour(playerColour);
 
+	world->AddGameObject(character);
 	return character;
 }
 
@@ -488,6 +493,7 @@ CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 	item->GetPhysicsObject()->SetInverseMass(1.0f);
 	item->GetPhysicsObject()->InitSphereInertia();
 
+	item->GetRenderObject()->SetColour(collectibleColour);
 	world->AddGameObject(item);
 	collectibles.push_back(item);
 	return item;
