@@ -493,6 +493,7 @@ CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 	item->GetPhysicsObject()->SetInverseMass(1.0f);
 	item->GetPhysicsObject()->InitSphereInertia();
 
+	//item->AddIgnoreLayer(Layer::Player);
 	item->GetRenderObject()->SetColour(collectibleColour);
 	world->AddGameObject(item);
 	collectibles.push_back(item);

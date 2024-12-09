@@ -206,6 +206,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\CollectibleObject.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameScene01.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.h" />
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\LayerMask.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkedGame.h" />
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\PlayerObject.h" />

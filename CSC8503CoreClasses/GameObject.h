@@ -1,6 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "Transform.h"
 #include "CollisionVolume.h"
+#include "../CSC8503/LayerMask.h"
+#include <bitset>
 
 using std::vector;
 
@@ -74,6 +76,23 @@ namespace NCL::CSC8503 {
 			return worldID;
 		}
 
+		void SetLayer(Layer layer) { this->layer = layer; }
+		Layer GetLayer() const { return layer; }
+
+		void AddIgnoreLayer(Layer layer) {
+			ignoreLayers.set(static_cast<size_t>(layer));
+		}
+		void RemoveIgnoreLayer(Layer layer) {
+			ignoreLayers.reset(static_cast<size_t>(layer));
+		}
+		bool ShouldCollideWith(GameObject* other) {
+			return !ignoreLayers.test(static_cast<size_t>(other->GetLayer()));
+		}
+		virtual bool ShouldResolvePhysicsCollisionWith(GameObject* other) {
+			// 默认情况下，如果应该碰撞，就应该解析物理碰撞
+			return ShouldCollideWith(other);
+		}
+
 	protected:
 		Transform			transform;
 
@@ -87,6 +106,9 @@ namespace NCL::CSC8503 {
 		std::string	name;
 
 		Vector3 broadphaseAABB;
+
+		Layer layer;
+		std::bitset<static_cast<size_t>(Layer::MaxLayers)> ignoreLayers; //无视碰撞检测的Layer列表
 	};
 }
 

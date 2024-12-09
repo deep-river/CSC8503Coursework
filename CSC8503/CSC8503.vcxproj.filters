@@ -42,6 +42,9 @@
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\GameTechRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\LayerMask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Dev\CSC8503Coursework\CSC8503\NetworkPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -204,11 +204,18 @@ void PhysicsSystem::BasicCollisionDetection() {
 			if ((*j)->GetPhysicsObject() == nullptr) {
 				continue;
 			}
+			//判断对象Layer是否在无视碰撞列表
+			if (!(*i)->ShouldCollideWith(*j) || !(*j)->ShouldCollideWith(*i)) {
+				continue;
+			}
 			CollisionDetection::CollisionInfo info;
 			if (CollisionDetection::ObjectIntersection(*i, *j, info)) {
 				//std::cout << "Collision between " << (*i)->GetName() << " and " << (*j)->GetName() << std::endl;
-				ImpulseResolveCollision(*info.a, *info.b, info.point);
+				//ImpulseResolveCollision(*info.a, *info.b, info.point);
 				//ResolveSpringCollision(*info.a, *info.b, info.point);
+				if ((*i)->ShouldResolvePhysicsCollisionWith(*j) && (*j)->ShouldResolvePhysicsCollisionWith(*i)) {
+					ImpulseResolveCollision(*info.a, *info.b, info.point);
+				}
 				info.framesLeft = numCollisionFrames;
 				allCollisions.insert(info);
 			}
@@ -320,6 +327,9 @@ void PhysicsSystem::NarrowPhase() {
 		i = broadphaseCollisions.begin();
 		i != broadphaseCollisions.end(); ++i) {
 		CollisionDetection::CollisionInfo info = *i;
+		if (!info.a->ShouldCollideWith(info.b) || !info.b->ShouldCollideWith(info.a)) {
+			continue;
+		}
 		if (CollisionDetection::ObjectIntersection(info.a, info.b, info)) {
 			//std::cout << "Narrowphase collision between " << info.a->GetName() << " and " << info.b->GetName() << std::endl;
 			ImpulseResolveCollision(*info.a, *info.b, info.point);
