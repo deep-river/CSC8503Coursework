@@ -87,6 +87,7 @@ namespace NCL {
 			Mesh* kittenMesh = nullptr;
 			Mesh* enemyMesh = nullptr;
 			Mesh* bonusMesh = nullptr;
+			Mesh* coinMesh = nullptr;
 
 			Vector3 lockedOffset = Vector3(0, 5, -10); //相机对跟踪对象的位置偏移量
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离

@@ -53,6 +53,8 @@ void GameScene01::InitialiseAssets() {
 	bonusMesh = renderer->LoadMesh("19463_Kitten_Head_v1.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
 
+	coinMesh = renderer->LoadMesh("coin.msh");
+
 	basicTex = renderer->LoadTexture("checkerboard.png");
 	basicShader = renderer->LoadShader("scene.vert", "scene.frag");
 
@@ -486,9 +488,9 @@ CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 
 	SphereVolume* volume = new SphereVolume(0.5f);
 	item->SetBoundingVolume((CollisionVolume*)volume);
-	item->GetTransform().SetScale(Vector3(2, 2, 2)).SetPosition(position);
+	item->GetTransform().SetScale(Vector3(0.2, 0.2, 0.2)).SetPosition(position);
 
-	item->SetRenderObject(new RenderObject(&item->GetTransform(), bonusMesh, nullptr, basicShader));
+	item->SetRenderObject(new RenderObject(&item->GetTransform(), coinMesh, nullptr, basicShader));
 	item->SetPhysicsObject(new PhysicsObject(&item->GetTransform(), item->GetBoundingVolume()));
 	item->GetPhysicsObject()->SetInverseMass(1.0f);
 	item->GetPhysicsObject()->InitSphereInertia();
