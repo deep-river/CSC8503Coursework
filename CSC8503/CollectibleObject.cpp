@@ -19,7 +19,7 @@ void CollectibleObject::OnCollisionBegin(GameObject* otherObject) {
 	//std::cout << "Collided with " << otherObject->GetName() << std::endl;
 	if (otherObject->GetLayer() == Layer::Player) {
 		// cast otherObject to PlayerObject
-		PlayerObject* player = dynamic_cast<PlayerObject*>(otherObject);
+		PlayerObject* player = (PlayerObject*)otherObject;
 		player->AddScore(1);
 		isActive = false;
 	}

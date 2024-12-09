@@ -486,7 +486,7 @@ GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
 CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 	CollectibleObject* item = new CollectibleObject();
 
-	SphereVolume* volume = new SphereVolume(0.5f);
+	SphereVolume* volume = new SphereVolume(1.0f);
 	item->SetBoundingVolume((CollisionVolume*)volume);
 	item->GetTransform().SetScale(Vector3(0.2, 0.2, 0.2)).SetPosition(position);
 

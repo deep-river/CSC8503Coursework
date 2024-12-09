@@ -274,6 +274,7 @@ int main() {
 	//TestStateMachine(); //测试简单状态机
 	//TestPathfinding(); //测试二维Grid寻路
 	//TestBehaviourTree(); //测试简单行为树
+	//TestNetworking(); //测试模拟网络通信
 
 	//TutorialGame* g = new TutorialGame(); //测试场景
 	GameScene01* g = new GameScene01(); //测试场景
