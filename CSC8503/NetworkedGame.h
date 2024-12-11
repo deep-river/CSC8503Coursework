@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 //#include "TutorialGame.h"
 #include "GameScene01.h"
 #include "NetworkBase.h"
@@ -28,6 +28,10 @@ namespace NCL {
 
 			void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
 
+			void InitNetworkedGameScene();
+
+			void UpdateNetworkSelectionUI(float dt);
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
@@ -45,6 +49,8 @@ namespace NCL {
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;
+
+			bool isNetworkedGameStarted = false;
 		};
 	}
 }

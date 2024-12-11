@@ -40,7 +40,7 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 	controller.MapAxis(4, "YLook");
 
 	InitialiseAssets();
-	std::cout << ">>>>>>>>>>>>Scene: GameScene01 begin!<<<<<<<<<<<<" << std::endl;
+	std::cout << ">>>>>>>>>>[Scene: GameScene01 begin!]<<<<<<<<<<" << std::endl;
 }
 
 void GameScene01::InitialiseAssets() {
@@ -58,8 +58,6 @@ void GameScene01::InitialiseAssets() {
 	basicTex = renderer->LoadTexture("checkerboard.png");
 	basicShader = renderer->LoadShader("scene.vert", "scene.frag");
 
-	InitWorld();
-	InitCamera();
 }
 
 GameScene01::~GameScene01() {
@@ -85,176 +83,10 @@ GameScene01::~GameScene01() {
 	delete world;
 }
 
-void GameScene01::UpdateGame(float dt) {
-	if (!isGameOver) {
-		if (showMenu) {
-			RenderMenu();
-		}
-		else {
-			if (player != nullptr) {
-				Vector3 objPos = player->GetTransform().GetPosition();
-				Vector3 camPos = objPos + lockedOffset;
-
-				Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
-				Matrix4 modelMat = Matrix::Inverse(temp);
-
-				Quaternion q(modelMat);
-				Vector3 angles = q.ToEuler(); //nearly there now!
-
-				physics->UseGravity(useGravity);
-
-				world->GetMainCamera().UpdateCamera(dt);
-				world->GetMainCamera().SetPosition(camPos);
-				//world->GetMainCamera().SetPitch(angles.x);
-				//world->GetMainCamera().SetYaw(angles.y);
-			}
-			UpdateGameTimer(dt);
-			UpdatePlayer(dt);
-			UpdateCamera();
-			UpdateGameUI();
-			//This year we can draw debug textures as well!
-			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
-			world->UpdateWorld(dt);
-			physics->Update(dt);
-
-			UpdateCollectibles(dt);
-		}
-	} else {
-		RenderGameOverScreen();
-	}
-
-	UpdateKeys();
-	renderer->Update(dt);
-	renderer->Render();
-	Debug::UpdateRenderables(dt);
-}
-
-void GameScene01::UpdateKeys() {
-	if (Window::GetKeyboard()->KeyPressed(KeyCodes::ESCAPE)) {
-		showMenu = !showMenu;
-	}
-}
-
-void GameScene01::UpdateGameTimer(float dt) {
-	gameTimer -= dt;
-	if (gameTimer <= 0) {
-		isGameOver = true;
-	}
-}
-
-void GameScene01::UpdatePlayer(float dt) {
-	if (!player) return;
-
-	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
-	player->GetTransform().SetOrientation(player->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
-
-	Quaternion objOrientation = player->GetTransform().GetOrientation();
-	Vector3 forward = objOrientation * Vector3(0, 0, -1);
-	Vector3 right = objOrientation * Vector3(1, 0, 0);
-	//player movement
-	Vector3 movement(0, 0, 0);
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::W)) {
-		movement -= forward;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::S)) {
-		movement += forward;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::A)) {
-		movement += right;
-	}
-	if (Window::GetKeyboard()->KeyDown(KeyCodes::D)) {
-		movement -= right;
-	}
-
-	if (Vector::Length(movement) == 0) {
-		//当输入的合成方向为0，即玩家松开按键时，将角色的水平速度设置为零，避免松开按键后仍惯性移动
-		//注意Y轴速度保持不变，避免角色不受重力影响悬空
-		float currrentYSpeed = player->GetPhysicsObject()->GetLinearVelocity().y;
-		player->GetPhysicsObject()->SetLinearVelocity(Vector3(0, currrentYSpeed, 0));
-	} else if (Vector::Length(movement) > 0) {
-		// Normalize and scale the movement
-		Vector::Normalise(movement);
-		movement *= playerMoveSpeed * dt;
-		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
-	}
-}
-
-void GameScene01::UpdateCamera() {
-	if (!player) return;
-	Quaternion objOrientation = player->GetTransform().GetOrientation();
-	//鼠标滚轮调整相机与角色之间的跟踪距离
-	float moveWheelMovement = Window::GetMouse()->GetWheelMovement();
-	cameraDistance += moveWheelMovement * 1.0f;
-	cameraDistance = std::min(-5.0f, std::max(cameraDistance, -15.0f)); // Clamp
-	cameraHeight -= moveWheelMovement * 0.5f;
-	cameraHeight = std::max(2.5f, std::min(cameraHeight, 7.5f)); // Clamp
-
-	lockedOffset.y = cameraHeight;
-	lockedOffset.z = cameraDistance;
-	Vector3 objPos = player->GetTransform().GetPosition();
-	Vector3 camPos = objPos + (objOrientation * lockedOffset);
-
-	world->GetMainCamera().SetPosition(camPos);
-	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
-	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);
-}
-
-void GameScene01::UpdateGameUI() {
-	if (!isGameOver) {
-		Debug::Print("GameScene01", Vector2(50, 5), Debug::WHITE);
-		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
-		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
-		Debug::Print("Score: " + std::to_string(player->GetScore()), Vector2(2, 10), Debug::YELLOW);
-	}
-}
-
-void GameScene01::RenderMenu() {
-	Debug::Print("Menu", Vector2(40, 40), Debug::WHITE);
-	Debug::Print("1. Play Again", Vector2(40, 45), Debug::WHITE);
-	Debug::Print("2. Exit Game", Vector2(40, 50), Debug::WHITE);
-
-	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
-		// Reset game state
-		gameTimer = gameDuration;
-		player->ResetScore();
-		isGameOver = false;
-		showMenu = false;
-		InitWorld();
-	}
-	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
-		exit(0);
-	}
-}
-
-void GameScene01::RenderGameOverScreen() {
-	Debug::Print("Game Over!", Vector2(40, 35), Debug::RED);
-	Debug::Print("Final Score: " + std::to_string(player->GetScore()), Vector2(40, 40), Debug::YELLOW);
-	Debug::Print("1. Play Again", Vector2(40, 50), Debug::WHITE);
-	Debug::Print("2. Exit Game", Vector2(40, 55), Debug::WHITE);
-
-	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
-		gameTimer = gameDuration;
-		player->ResetScore();
-		isGameOver = false;
-		showMenu = false;
-		InitWorld();
-	}
-	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
-		exit(0);
-	}
-}
-
-void GameScene01::UpdateCollectibles(float dt) {
-	for (auto it = collectibles.begin(); it != collectibles.end(); ) {
-		(*it)->Update(dt);
-
-		if (!(*it)->IsActive()) {
-			world->RemoveGameObject(*it);
-			it = collectibles.erase(it);
-		} else {
-			++it;
-		}
-	}
+void GameScene01::StartLevel() {
+	InitWorld();
+	InitCamera();
+	InitGameObjects();
 }
 
 void GameScene01::InitCamera() {
@@ -272,7 +104,7 @@ void GameScene01::InitWorld() {
 	//BridgeConstraintTest(); //重力吊桥物理约束测试
 	//InitDefaultFloor();
 	InitTerrain(20, 20, 10.0f);
-	InitGameObjects();
+	//InitGameObjects();
 }
 
 void GameScene01::InitDefaultFloor() {
@@ -500,5 +332,181 @@ CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {
 	world->AddGameObject(item);
 	collectibles.push_back(item);
 	return item;
+}
+
+// update functions
+
+void GameScene01::UpdateGame(float dt) {
+	if (!isGameOver) {
+		if (showMenu) {
+			RenderMenu();
+		}
+		else {
+			if (player != nullptr) {
+				Vector3 objPos = player->GetTransform().GetPosition();
+				Vector3 camPos = objPos + lockedOffset;
+
+				Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
+				Matrix4 modelMat = Matrix::Inverse(temp);
+
+				Quaternion q(modelMat);
+				Vector3 angles = q.ToEuler(); //nearly there now!
+
+				physics->UseGravity(useGravity);
+
+				world->GetMainCamera().UpdateCamera(dt);
+				world->GetMainCamera().SetPosition(camPos);
+				//world->GetMainCamera().SetPitch(angles.x);
+				//world->GetMainCamera().SetYaw(angles.y);
+			}
+			UpdateGameTimer(dt);
+			UpdatePlayer(dt);
+			UpdateCamera();
+			UpdateGameUI();
+			//This year we can draw debug textures as well!
+			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
+			world->UpdateWorld(dt);
+			physics->Update(dt);
+
+			UpdateCollectibles(dt);
+		}
+	} else {
+		RenderGameOverScreen();
+	}
+
+	UpdateKeys();
+	renderer->Update(dt);
+	renderer->Render();
+	Debug::UpdateRenderables(dt);
+}
+
+void GameScene01::UpdateKeys() {
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::ESCAPE)) {
+		showMenu = !showMenu;
+	}
+}
+
+void GameScene01::UpdateGameTimer(float dt) {
+	gameTimer -= dt;
+	if (gameTimer <= 0) {
+		isGameOver = true;
+	}
+}
+
+void GameScene01::UpdatePlayer(float dt) {
+	if (!player) return;
+
+	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
+	player->GetTransform().SetOrientation(player->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
+
+	Quaternion objOrientation = player->GetTransform().GetOrientation();
+	Vector3 forward = objOrientation * Vector3(0, 0, -1);
+	Vector3 right = objOrientation * Vector3(1, 0, 0);
+	//player movement
+	Vector3 movement(0, 0, 0);
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::W)) {
+		movement -= forward;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::S)) {
+		movement += forward;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::A)) {
+		movement += right;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyCodes::D)) {
+		movement -= right;
+	}
+
+	if (Vector::Length(movement) == 0) {
+		//当输入的合成方向为0，即玩家松开按键时，将角色的水平速度设置为零，避免松开按键后仍惯性移动
+		//注意Y轴速度保持不变，避免角色不受重力影响悬空
+		float currrentYSpeed = player->GetPhysicsObject()->GetLinearVelocity().y;
+		player->GetPhysicsObject()->SetLinearVelocity(Vector3(0, currrentYSpeed, 0));
+	} else if (Vector::Length(movement) > 0) {
+		// Normalize and scale the movement
+		Vector::Normalise(movement);
+		movement *= playerMoveSpeed * dt;
+		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
+	}
+}
+
+void GameScene01::UpdateCamera() {
+	if (!player) return;
+
+	Quaternion objOrientation = player->GetTransform().GetOrientation();
+	//鼠标滚轮调整相机与角色之间的跟踪距离
+	float moveWheelMovement = Window::GetMouse()->GetWheelMovement();
+	cameraDistance += moveWheelMovement * 1.0f;
+	cameraDistance = std::min(-5.0f, std::max(cameraDistance, -15.0f)); // Clamp
+	cameraHeight -= moveWheelMovement * 0.5f;
+	cameraHeight = std::max(2.5f, std::min(cameraHeight, 7.5f)); // Clamp
+
+	lockedOffset.y = cameraHeight;
+	lockedOffset.z = cameraDistance;
+	Vector3 objPos = player->GetTransform().GetPosition();
+	Vector3 camPos = objPos + (objOrientation * lockedOffset);
+
+	world->GetMainCamera().SetPosition(camPos);
+	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
+	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);
+}
+
+void GameScene01::UpdateGameUI() {
+	if (!isGameOver) {
+		Debug::Print("GameScene01", Vector2(50, 5), Debug::WHITE);
+		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
+		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
+		Debug::Print("Score: " + std::to_string(player->GetScore()), Vector2(2, 10), Debug::YELLOW);
+	}
+}
+
+void GameScene01::RenderMenu() {
+	Debug::Print("Menu", Vector2(40, 40), Debug::WHITE);
+	Debug::Print("1. Play Again", Vector2(40, 45), Debug::WHITE);
+	Debug::Print("2. Exit Game", Vector2(40, 50), Debug::WHITE);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
+		// Reset game state
+		gameTimer = gameDuration;
+		player->ResetScore();
+		isGameOver = false;
+		showMenu = false;
+		//todo: 初始化networked game
+		InitWorld();
+	}
+	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
+		exit(0);
+	}
+}
+
+void GameScene01::RenderGameOverScreen() {
+	Debug::Print("Game Over!", Vector2(40, 35), Debug::RED);
+	Debug::Print("Final Score: " + std::to_string(player->GetScore()), Vector2(40, 40), Debug::YELLOW);
+	Debug::Print("1. Play Again", Vector2(40, 50), Debug::WHITE);
+	Debug::Print("2. Exit Game", Vector2(40, 55), Debug::WHITE);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
+		gameTimer = gameDuration;
+		player->ResetScore();
+		isGameOver = false;
+		showMenu = false;
+		InitWorld();
+	}
+	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
+		exit(0);
+	}
+}
+
+void GameScene01::UpdateCollectibles(float dt) {
+	for (auto it = collectibles.begin(); it != collectibles.end(); ) {
+		(*it)->Update(dt);
+
+		if (!(*it)->IsActive()) {
+			world->RemoveGameObject(*it);
+			it = collectibles.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 

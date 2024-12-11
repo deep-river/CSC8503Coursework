@@ -60,6 +60,8 @@ namespace NCL {
 
 			void UpdateCollectibles(float dt);
 
+			void StartLevel();
+
 #ifdef USEVULKAN
 			GameTechVulkanRenderer* renderer;
 #else

@@ -277,7 +277,9 @@ int main() {
 	//TestNetworking(); //测试模拟网络通信
 
 	//TutorialGame* g = new TutorialGame(); //测试场景
-	GameScene01* g = new GameScene01(); //测试场景
+	//GameScene01* g = new GameScene01(); //测试场景
+	NetworkedGame* g = new NetworkedGame(); //测试网络通信
+
 	w->GetTimer().GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer().GetTimeDeltaSeconds();

@@ -1,4 +1,4 @@
-#include "NetworkedGame.h"
+﻿#include "NetworkedGame.h"
 #include "NetworkPlayer.h"
 #include "NetworkObject.h"
 #include "GameServer.h"
@@ -23,17 +23,32 @@ NetworkedGame::NetworkedGame()	{
 	NetworkBase::Initialise();
 	timeToNextPacket  = 0.0f;
 	packetsToSnapshot = 0;
+
+	InitNetworkedGameScene();
+	isNetworkedGameStarted = false;
+	std::cout << ">>>>>>>>>>[NetworkedGame created!   ]<<<<<<<<<<" << std::endl;
+
 }
 
+//初始化场景，但不包括道具和玩家
+//todo: 【有可能】道具和玩家可能需要分离，避免新玩家的加入初始化所有道具
 NetworkedGame::~NetworkedGame()	{
 	delete thisServer;
 	delete thisClient;
+}
+
+void NetworkedGame::InitNetworkedGameScene() {
+	InitWorld();
+	InitCamera();
 }
 
 void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
+
+	isNetworkedGameStarted = true;
+	std::cout << ">>>>>>>>>>[NetworkedGame: Started as server!]<<<<<<<<<<" << std::endl;
 
 	StartLevel();
 }
@@ -47,9 +62,13 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 
+	isNetworkedGameStarted = true;
+	std::cout << ">>>>>>>>>>[NetworkedGame: Started as client!]<<<<<<<<<<" << std::endl;
+
 	StartLevel();
 }
 
+//按F9键启动服务器，按F10键启动客户端
 void NetworkedGame::UpdateGame(float dt) {
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -62,15 +81,34 @@ void NetworkedGame::UpdateGame(float dt) {
 		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
 	}
 
-	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyCodes::F9)) {
+	if (!isNetworkedGameStarted && !thisServer && Window::GetKeyboard()->KeyPressed(KeyCodes::F9)) {
 		StartAsServer();
 	}
-	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyCodes::F10)) {
+	if (!isNetworkedGameStarted && !thisClient && Window::GetKeyboard()->KeyPressed(KeyCodes::F10)) {
 		StartAsClient(127,0,0,1);
 	}
 
-	//TutorialGame::UpdateGame(dt);
-	GameScene01::UpdateGame(dt);
+	if (!isNetworkedGameStarted) {
+		UpdateNetworkSelectionUI(dt);
+	} else {
+		GameScene01::UpdateGame(dt);
+	}
+}
+
+void NetworkedGame::UpdateNetworkSelectionUI(float dt) {
+	Debug::Print("Game mode selection: ", Vector2(50, 5), Debug::WHITE);
+	Debug::Print("Press F9 to start as server.", Vector2(60, 5), Debug::WHITE);
+	Debug::Print("Press F10 to start as client.", Vector2(70, 5), Debug::WHITE);
+	Debug::Print("Press Esc to quit game.", Vector2(80, 5), Debug::WHITE);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::ESCAPE)) {
+		exit(0);
+	}
+
+	//world->UpdateWorld(dt);
+	renderer->Update(dt);
+	renderer->Render();
+	Debug::UpdateRenderables(dt);
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -150,6 +188,7 @@ void NetworkedGame::SpawnPlayer() {
 
 void NetworkedGame::StartLevel() {
 
+	InitGameObjects();
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
