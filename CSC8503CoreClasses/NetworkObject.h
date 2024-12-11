@@ -17,7 +17,7 @@ namespace NCL::CSC8503 {
 	};
 
 	struct DeltaPacket : public GamePacket {
-		int		fullID		= -1;
+		int		fullID = -1; //base state ID to apply deltas to
 		int		objectID	= -1;
 		char	pos[3];
 		char	orientation[4];
@@ -29,8 +29,9 @@ namespace NCL::CSC8503 {
 	};
 
 	struct ClientPacket : public GamePacket {
-		int		lastID;
-		char	buttonstates[8];
+		int		lastID; // last state ID received for ack to server
+		char	buttonstates[8]; // stores buttons and mouse movements etc
+		// in our game, this should be WASD, mouse Y rotation, and maybe F key
 
 		ClientPacket() {
 			size = sizeof(ClientPacket);
