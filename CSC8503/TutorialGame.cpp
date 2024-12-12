@@ -83,76 +83,6 @@ TutorialGame::~TutorialGame()	{
 	delete world;
 }
 
-//void TutorialGame::UpdateGame(float dt) {
-//	if (!inSelectionMode) {
-//		world->GetMainCamera().UpdateCamera(dt);
-//	}
-//	if (lockedObject != nullptr) {
-//		Vector3 objPos = lockedObject->GetTransform().GetPosition();
-//		Vector3 camPos = objPos + lockedOffset;
-//
-//		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0,1,0));
-//
-//		Matrix4 modelMat = Matrix::Inverse(temp);
-//
-//		Quaternion q(modelMat);
-//		Vector3 angles = q.ToEuler(); //nearly there now!
-//
-//		world->GetMainCamera().SetPosition(camPos);
-//		world->GetMainCamera().SetPitch(angles.x);
-//		world->GetMainCamera().SetYaw(angles.y);
-//	}
-//
-//	//简单状态机对象
-//	if (testStateObject) {
-//		testStateObject->Update(dt);
-//	}
-//
-//	UpdateKeys();
-//
-//	if (useGravity) {
-//		Debug::Print("(G)ravity on", Vector2(5, 95), Debug::RED);
-//	}
-//	else {
-//		Debug::Print("(G)ravity off", Vector2(5, 95), Debug::RED);
-//	}
-//	//This year we can draw debug textures as well!
-//	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
-//
-//	RayCollision closestCollision;
-//	// 按下K键后寻找rayDir方向上距离选中对象最近的物体
-//	if (Window::GetKeyboard()->KeyPressed(KeyCodes::K) && selectionObject) {
-//		Vector3 rayPos;
-//		Vector3 rayDir;
-//
-//		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);
-//
-//		rayPos = selectionObject->GetTransform().GetPosition();
-//
-//		Ray r = Ray(rayPos, rayDir);
-//
-//		if (world->Raycast(r, closestCollision, true, selectionObject)) {
-//			if (objClosest) {
-//				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-//			}
-//			objClosest = (GameObject*)closestCollision.node;
-//
-//			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
-//		}
-//	}
-//
-//	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
-//
-//	SelectObject();
-//	MoveSelectedObject();
-//
-//	world->UpdateWorld(dt);
-//	renderer->Update(dt);
-//	physics->Update(dt);
-//
-//	renderer->Render();
-//	Debug::UpdateRenderables(dt);
-//}
 void TutorialGame::UpdateGame(float dt) {
 	if (!inSelectionMode) {
 		world->GetMainCamera().UpdateCamera(dt);
@@ -161,17 +91,16 @@ void TutorialGame::UpdateGame(float dt) {
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
 		Vector3 camPos = objPos + lockedOffset;
 
-		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
+		Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0,1,0));
 
 		Matrix4 modelMat = Matrix::Inverse(temp);
 
 		Quaternion q(modelMat);
 		Vector3 angles = q.ToEuler(); //nearly there now!
 
-		world->GetMainCamera().UpdateCamera(dt);
 		world->GetMainCamera().SetPosition(camPos);
-		//world->GetMainCamera().SetPitch(angles.x);
-		//world->GetMainCamera().SetYaw(angles.y);
+		world->GetMainCamera().SetPitch(angles.x);
+		world->GetMainCamera().SetYaw(angles.y);
 	}
 
 	//简单状态机对象
@@ -189,6 +118,30 @@ void TutorialGame::UpdateGame(float dt) {
 	}
 	//This year we can draw debug textures as well!
 	//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
+
+	RayCollision closestCollision;
+	// 按下K键后寻找rayDir方向上距离选中对象最近的物体
+	if (Window::GetKeyboard()->KeyPressed(KeyCodes::K) && selectionObject) {
+		Vector3 rayPos;
+		Vector3 rayDir;
+
+		rayDir = selectionObject->GetTransform().GetOrientation() * Vector3(0, 0, -1);
+
+		rayPos = selectionObject->GetTransform().GetPosition();
+
+		Ray r = Ray(rayPos, rayDir);
+
+		if (world->Raycast(r, closestCollision, true, selectionObject)) {
+			if (objClosest) {
+				objClosest->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+			}
+			objClosest = (GameObject*)closestCollision.node;
+
+			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
+		}
+	}
+
+	//Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
 	SelectObject();
 	MoveSelectedObject();
