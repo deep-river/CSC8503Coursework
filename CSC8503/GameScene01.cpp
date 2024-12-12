@@ -342,31 +342,14 @@ void GameScene01::UpdateGame(float dt) {
 			RenderMenu();
 		}
 		else {
-			if (player != nullptr) {
-				Vector3 objPos = player->GetTransform().GetPosition();
-				Vector3 camPos = objPos + lockedOffset;
-
-				Matrix4 temp = Matrix::View(camPos, objPos, Vector3(0, 1, 0));
-				Matrix4 modelMat = Matrix::Inverse(temp);
-
-				Quaternion q(modelMat);
-				Vector3 angles = q.ToEuler(); //nearly there now!
-
-				physics->UseGravity(useGravity);
-
-				world->GetMainCamera().UpdateCamera(dt);
-				world->GetMainCamera().SetPosition(camPos);
-				//world->GetMainCamera().SetPitch(angles.x);
-				//world->GetMainCamera().SetYaw(angles.y);
-			}
 			UpdateGameTimer(dt);
-			UpdatePlayer(dt);
-			UpdateCamera();
-			UpdateGameUI();
-			//This year we can draw debug textures as well!
-			//Debug::DrawTex(*basicTex, Vector2(10, 10), Vector2(5, 5), Debug::MAGENTA);
-			world->UpdateWorld(dt);
+			physics->UseGravity(useGravity);
 			physics->Update(dt);
+			world->UpdateWorld(dt);
+
+			UpdatePlayer(dt);
+			UpdateCamera(dt);
+			UpdateGameUI();
 
 			UpdateCollectibles(dt);
 		}
@@ -430,7 +413,7 @@ void GameScene01::UpdatePlayer(float dt) {
 	}
 }
 
-void GameScene01::UpdateCamera() {
+void GameScene01::UpdateCamera(float dt) {
 	if (!player) return;
 
 	Quaternion objOrientation = player->GetTransform().GetOrientation();
@@ -443,9 +426,11 @@ void GameScene01::UpdateCamera() {
 
 	lockedOffset.y = cameraHeight;
 	lockedOffset.z = cameraDistance;
+
 	Vector3 objPos = player->GetTransform().GetPosition();
 	Vector3 camPos = objPos + (objOrientation * lockedOffset);
 
+	world->GetMainCamera().UpdateCamera(dt);
 	world->GetMainCamera().SetPosition(camPos);
 	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
 	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);

@@ -49,7 +49,7 @@ namespace NCL {
 			void BridgeConstraintTest();
 
 			void UpdatePlayer(float dt);
-			void UpdateCamera();
+			void UpdateCamera(float dt);
 			void UpdateGameUI();
 			void RenderMenu();
 			void RenderGameOverScreen();
