@@ -73,7 +73,7 @@ GameScene01::~GameScene01() {
 	delete basicTex;
 	delete basicShader;
 
-	delete player;
+	delete localPlayer;
 	
 	for (auto collectible : collectibles) {
 		delete collectible;
@@ -154,7 +154,7 @@ void GameScene01::InitGameObjects() {
 }
 
 void GameScene01::InitPlayer() {
-	player = AddPlayerToWorld(playerSpawnPos);
+	localPlayer = AddPlayerToWorld(playerSpawnPos);
 }
 
 void GameScene01::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {
@@ -384,12 +384,12 @@ void GameScene01::UpdateGameTimer(float dt) {
 }
 
 void GameScene01::UpdatePlayer(float dt) {
-	if (!player) return;
+	if (!localPlayer) return;
 
 	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
-	player->GetTransform().SetOrientation(player->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
+	localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
 
-	Quaternion objOrientation = player->GetTransform().GetOrientation();
+	Quaternion objOrientation = localPlayer->GetTransform().GetOrientation();
 	Vector3 forward = objOrientation * Vector3(0, 0, -1);
 	Vector3 right = objOrientation * Vector3(1, 0, 0);
 	//player movement
@@ -410,20 +410,20 @@ void GameScene01::UpdatePlayer(float dt) {
 	if (Vector::Length(movement) == 0) {
 		//当输入的合成方向为0，即玩家松开按键时，将角色的水平速度设置为零，避免松开按键后仍惯性移动
 		//注意Y轴速度保持不变，避免角色不受重力影响悬空
-		float currrentYSpeed = player->GetPhysicsObject()->GetLinearVelocity().y;
-		player->GetPhysicsObject()->SetLinearVelocity(Vector3(0, currrentYSpeed, 0));
+		float currrentYSpeed = localPlayer->GetPhysicsObject()->GetLinearVelocity().y;
+		localPlayer->GetPhysicsObject()->SetLinearVelocity(Vector3(0, currrentYSpeed, 0));
 	} else if (Vector::Length(movement) > 0) {
 		// Normalize and scale the movement
 		Vector::Normalise(movement);
 		movement *= playerMoveSpeed * dt;
-		player->GetPhysicsObject()->ApplyLinearImpulse(movement);
+		localPlayer->GetPhysicsObject()->ApplyLinearImpulse(movement);
 	}
 }
 
 void GameScene01::UpdateCamera(float dt) {
-	if (!player) return;
+	if (!localPlayer) return;
 
-	Quaternion objOrientation = player->GetTransform().GetOrientation();
+	Quaternion objOrientation = localPlayer->GetTransform().GetOrientation();
 	//鼠标滚轮调整相机与角色之间的跟踪距离
 	float moveWheelMovement = Window::GetMouse()->GetWheelMovement();
 	cameraDistance += moveWheelMovement * 1.0f;
@@ -434,13 +434,13 @@ void GameScene01::UpdateCamera(float dt) {
 	lockedOffset.y = cameraHeight;
 	lockedOffset.z = cameraDistance;
 
-	Vector3 objPos = player->GetTransform().GetPosition();
+	Vector3 objPos = localPlayer->GetTransform().GetPosition();
 	Vector3 camPos = objPos + (objOrientation * lockedOffset);
 
 	world->GetMainCamera().UpdateCamera(dt);
 	world->GetMainCamera().SetPosition(camPos);
 	//world->GetMainCamera().SetPitch(0); //锁定摄像机Y轴移动
-	world->GetMainCamera().SetYaw(player->GetTransform().GetOrientation().ToEuler().y + 180.0f);
+	world->GetMainCamera().SetYaw(localPlayer->GetTransform().GetOrientation().ToEuler().y + 180.0f);
 }
 
 void GameScene01::UpdateGameUI() {
@@ -448,7 +448,7 @@ void GameScene01::UpdateGameUI() {
 		Debug::Print("GameScene01", Vector2(50, 5), Debug::WHITE);
 		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
 		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
-		Debug::Print("Score: " + std::to_string(player->GetScore()), Vector2(2, 10), Debug::YELLOW);
+		Debug::Print("Score: " + std::to_string(localPlayer->GetScore()), Vector2(2, 10), Debug::YELLOW);
 	}
 }
 
@@ -460,7 +460,7 @@ void GameScene01::RenderMenu() {
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
 		// Reset game state
 		gameTimer = gameDuration;
-		player->ResetScore();
+		localPlayer->ResetScore();
 		isGameOver = false;
 		showMenu = false;
 		//todo: 初始化networked game and fix bug
@@ -473,13 +473,13 @@ void GameScene01::RenderMenu() {
 
 void GameScene01::RenderGameOverScreen() {
 	Debug::Print("Game Over!", Vector2(40, 35), Debug::RED);
-	Debug::Print("Final Score: " + std::to_string(player->GetScore()), Vector2(40, 40), Debug::YELLOW);
+	Debug::Print("Final Score: " + std::to_string(localPlayer->GetScore()), Vector2(40, 40), Debug::YELLOW);
 	Debug::Print("1. Play Again", Vector2(40, 50), Debug::WHITE);
 	Debug::Print("2. Exit Game", Vector2(40, 55), Debug::WHITE);
 
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM1)) {
 		gameTimer = gameDuration;
-		player->ResetScore();
+		localPlayer->ResetScore();
 		isGameOver = false;
 		showMenu = false;
 		//todo: 初始化networked game and fix bug

@@ -97,7 +97,9 @@ namespace NCL {
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离
 			float cameraHeight = 5.0f; //相机高度
 
-			PlayerObject* player;
+			//PlayerObject* player;
+			PlayerObject* localPlayer;
+
 			float playerMoveSpeed = 30.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
 

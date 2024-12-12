@@ -52,23 +52,17 @@ void NetworkedGame::StartAsServer() {
 	isNetworkedGameStarted = true;
 	std::cout << ">>>>>>>>>>[NetworkedGame: Started as server!]<<<<<<<<<<" << std::endl;
 
-	//StartLevel();
-
-	// 生成本地玩家并添加到 serverPlayers 字典中
-	int localPlayerID = 0; // 服务器玩家 ID 为 0
-	localPlayer = AddPlayerToWorld(playerSpawnPos);
-	serverPlayers[localPlayerID] = localPlayer;
-
-	// 设置本地玩家的网络对象
-	NetworkObject* netObj = new NetworkObject(*localPlayer, localPlayerID);
-	localPlayer->SetNetworkObject(netObj);
-
-	std::cout << "Local player spawned with ID: " << localPlayerID << std::endl;
+	StartNetLevel();
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient = new GameClient();
-	thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
+
+	bool success = thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
+	if (!success) {
+		std::cout << "Failed to connect to server!" << std::endl;
+		return;
+	}
 
 	thisClient->RegisterPacketHandler(Delta_State, this);
 	thisClient->RegisterPacketHandler(Full_State, this);
@@ -195,13 +189,24 @@ void NetworkedGame::UpdateMinimumState() {
 	}
 }
 
-void NetworkedGame::SpawnPlayer() {
-
+void NetworkedGame::StartNetLevel() {
+	SpawnPlayer();
 }
 
-void NetworkedGame::StartLevel() {
+void NetworkedGame::SpawnPlayer() {
+	AddNetPlayerToWorld(playerSpawnPos, GeneratePlayerID());
+}
 
-	//SpawnPlayer();
+PlayerObject* NetworkedGame::AddNetPlayerToWorld(const Vector3& position, int playerID) {
+	PlayerObject* player = AddPlayerToWorld(position);
+
+	NetworkObject* netObj = new NetworkObject(*player, playerID);
+	player->SetNetworkObject(netObj);
+	std::cout << "Player " << playerID << " spawned!" << std::endl;
+
+	localPlayer = player;
+
+	return player;
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
@@ -219,4 +224,8 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 		newPacket.playerID = b->GetPlayerNum();
 		thisClient->SendPacket(newPacket);
 	}
+}
+
+int NetworkedGame::GeneratePlayerID() {
+	return ++PlayerIDIndex;
 }

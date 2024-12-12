@@ -22,7 +22,7 @@ namespace NCL {
 
 			void SpawnPlayer();
 
-			void StartLevel();
+			void StartNetLevel();
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
@@ -32,7 +32,9 @@ namespace NCL {
 
 			void UpdateNetworkSelectionUI(float dt);
 
-			PlayerObject* AddNetPlayerToWorld(const Vector3& position);
+			int GeneratePlayerID();
+
+			PlayerObject* AddNetPlayerToWorld(const Vector3& position, int playerID);
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -51,9 +53,11 @@ namespace NCL {
 
 			std::map<int, GameObject*> serverPlayers;
 			//GameObject* localPlayer;
-			PlayerObject* localPlayer;
+			//PlayerObject* localPlayer;
 
 			bool isNetworkedGameStarted = false;
+
+			int PlayerIDIndex = 0;
 		};
 	}
 }
