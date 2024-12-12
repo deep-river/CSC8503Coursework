@@ -32,6 +32,8 @@ namespace NCL {
 
 			void UpdateNetworkSelectionUI(float dt);
 
+			PlayerObject* AddNetPlayerToWorld(const Vector3& position);
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
@@ -48,7 +50,8 @@ namespace NCL {
 			std::vector<NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
-			GameObject* localPlayer;
+			//GameObject* localPlayer;
+			PlayerObject* localPlayer;
 
 			bool isNetworkedGameStarted = false;
 		};

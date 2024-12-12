@@ -37,9 +37,11 @@ NetworkedGame::~NetworkedGame()	{
 	delete thisClient;
 }
 
+//初始化联网场景
 void NetworkedGame::InitNetworkedGameScene() {
 	InitWorld();
 	InitCamera();
+	InitGameObjects();
 }
 
 void NetworkedGame::StartAsServer() {
@@ -50,7 +52,18 @@ void NetworkedGame::StartAsServer() {
 	isNetworkedGameStarted = true;
 	std::cout << ">>>>>>>>>>[NetworkedGame: Started as server!]<<<<<<<<<<" << std::endl;
 
-	StartLevel();
+	//StartLevel();
+
+	// 生成本地玩家并添加到 serverPlayers 字典中
+	int localPlayerID = 0; // 服务器玩家 ID 为 0
+	localPlayer = AddPlayerToWorld(playerSpawnPos);
+	serverPlayers[localPlayerID] = localPlayer;
+
+	// 设置本地玩家的网络对象
+	NetworkObject* netObj = new NetworkObject(*localPlayer, localPlayerID);
+	localPlayer->SetNetworkObject(netObj);
+
+	std::cout << "Local player spawned with ID: " << localPlayerID << std::endl;
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -188,7 +201,7 @@ void NetworkedGame::SpawnPlayer() {
 
 void NetworkedGame::StartLevel() {
 
-	InitGameObjects();
+	//SpawnPlayer();
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {

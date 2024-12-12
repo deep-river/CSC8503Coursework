@@ -41,6 +41,8 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 
 	InitialiseAssets();
 	std::cout << ">>>>>>>>>>[Scene: GameScene01 begin!]<<<<<<<<<<" << std::endl;
+
+	//StartLevel();
 }
 
 void GameScene01::InitialiseAssets() {
@@ -83,10 +85,12 @@ GameScene01::~GameScene01() {
 	delete world;
 }
 
+//初始化单机场景
 void GameScene01::StartLevel() {
 	InitWorld();
 	InitCamera();
 	InitGameObjects();
+	InitPlayer();
 }
 
 void GameScene01::InitCamera() {
@@ -140,7 +144,6 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 }
 
 void GameScene01::InitGameObjects() {
-	player = AddPlayerToWorld(playerSpawnPos);
 	//AddEnemyToWorld(Vector3(5, 5, 0));
 	//todo: 添加可收集物体
 	AddBonusToWorld(Vector3(-130, 10, 10));
@@ -148,6 +151,10 @@ void GameScene01::InitGameObjects() {
 	AddBonusToWorld(Vector3(-130, 10, 30));
 	AddBonusToWorld(Vector3(-130, 10, 40));
 	AddBonusToWorld(Vector3(-130, 10, 50));
+}
+
+void GameScene01::InitPlayer() {
+	player = AddPlayerToWorld(playerSpawnPos);
 }
 
 void GameScene01::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius) {
