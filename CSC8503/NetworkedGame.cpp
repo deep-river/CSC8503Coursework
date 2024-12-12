@@ -68,7 +68,6 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	StartLevel();
 }
 
-//按F9键启动服务器，按F10键启动客户端
 void NetworkedGame::UpdateGame(float dt) {
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
@@ -95,11 +94,12 @@ void NetworkedGame::UpdateGame(float dt) {
 	}
 }
 
+//按F9键启动服务器，按F10键启动客户端
 void NetworkedGame::UpdateNetworkSelectionUI(float dt) {
-	Debug::Print("Game mode selection: ", Vector2(50, 5), Debug::WHITE);
-	Debug::Print("Press F9 to start as server.", Vector2(60, 5), Debug::WHITE);
-	Debug::Print("Press F10 to start as client.", Vector2(70, 5), Debug::WHITE);
-	Debug::Print("Press Esc to quit game.", Vector2(80, 5), Debug::WHITE);
+	Debug::Print("Game mode selection: ", Vector2(25, 30), Debug::WHITE);
+	Debug::Print("Press F9 to start as server.", Vector2(25, 40), Debug::WHITE);
+	Debug::Print("Press F10 to start as client.", Vector2(25, 45), Debug::WHITE);
+	Debug::Print("Press Esc to quit game.", Vector2(25, 50), Debug::WHITE);
 
 	if (Window::GetKeyboard()->KeyPressed(KeyCodes::ESCAPE)) {
 		exit(0);

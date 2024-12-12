@@ -456,7 +456,7 @@ void GameScene01::RenderMenu() {
 		player->ResetScore();
 		isGameOver = false;
 		showMenu = false;
-		//todo: 初始化networked game
+		//todo: 初始化networked game and fix bug
 		InitWorld();
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
@@ -475,6 +475,7 @@ void GameScene01::RenderGameOverScreen() {
 		player->ResetScore();
 		isGameOver = false;
 		showMenu = false;
+		//todo: 初始化networked game and fix bug
 		InitWorld();
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
