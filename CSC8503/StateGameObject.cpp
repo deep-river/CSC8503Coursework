@@ -237,7 +237,7 @@ bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle, int num
 			//if (hitObject->GetName() != "") std::cout << "Ray hit object: " << hitObject->GetName() << std::endl;
 			if (hitObject->GetName() == "Player" && closestCollision.rayDistance <= detectionRange) {
 				//std::cout << "Player detected!" << std::endl;
-				Debug::Print("Player detected!", Vector2(10, 90));
+				Debug::Print("Player detected!", Vector2(10, 90), Debug::RED);
 				playerPosition = hitObject->GetTransform().GetPosition();
 				return true;
 			}
