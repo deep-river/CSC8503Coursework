@@ -187,7 +187,7 @@ void GameScene01::InitGameObjects() {
 	simplePatrolObject->AddWaypoint(waypoint1);
 	simplePatrolObject->AddWaypoint(waypoint2);
 	//goose，巡逻路径为(-10, 1.5, -15) - (25, 1.5, -15) - (25, 1.5, 20) - (-10, 1.5, 20)
-	/*gooseObject = AddGooseToWorld(Vector3(-10, 1.5, -15));
+	gooseObject = AddGooseToWorld(Vector3(-10, 1.5, 20));
 	Vector3 gWaypoint1 = Vector3(-10, 1.5, -15);
 	Vector3 gWaypoint2 = Vector3(25, 1.5, -15);
 	Vector3 gWaypoint3 = Vector3(25, 1.5, 20);
@@ -195,7 +195,7 @@ void GameScene01::InitGameObjects() {
 	gooseObject->AddWaypoint(gWaypoint1);
 	gooseObject->AddWaypoint(gWaypoint2);
 	gooseObject->AddWaypoint(gWaypoint3);
-	gooseObject->AddWaypoint(gWaypoint4);*/
+	gooseObject->AddWaypoint(gWaypoint4);
 
 	AddBonusToWorld(Vector3(-70, 5, 0));
 	AddBonusToWorld(Vector3(-80, 5, 0));
@@ -470,6 +470,9 @@ void GameScene01::UpdateGame(float dt) {
 			if (simplePatrolObject) {
 				simplePatrolObject->Update(dt);
 			}
+			if (gooseObject) {
+				gooseObject->Update(dt);
+			}
 
 			UpdateCollectibles(dt);
 		}
@@ -581,7 +584,8 @@ void GameScene01::RenderMenu() {
 		isGameOver = false;
 		showMenu = false;
 		//todo: 初始化networked game and fix bug
-		InitWorld();
+		//InitWorld();
+		StartLevel();
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
 		exit(0);
@@ -600,7 +604,8 @@ void GameScene01::RenderGameOverScreen() {
 		isGameOver = false;
 		showMenu = false;
 		//todo: 初始化networked game and fix bug
-		InitWorld();
+		//InitWorld();
+		StartLevel();
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyCodes::NUM2)) {
 		exit(0);

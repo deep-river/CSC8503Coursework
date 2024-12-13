@@ -14,8 +14,12 @@ StateGameObject::StateGameObject(GameWorld* world) {
 	moveSpeed = 1500.0f;
 	waypoints.clear();
 	currentWaypointIndex = 0;
-	playerDetected = false;
 	gameWorld = world;
+
+	playerDetected = false;
+	chaseTimer = 0.0f;
+	maxChaseTime = 3.0f; // 5 seconds of chasing before returning to patrol
+	detectionRange = 50.0f;
 
 	stateMachine = new StateMachine();
 
@@ -44,10 +48,8 @@ StateGameObject::StateGameObject(GameWorld* world) {
 		//Debug::Print("Patrol State", Vector2(10, 30));
 		});
 	State* alertState = new State([&](float dt) -> void {
-		// Stop moving and perform alert behavior
-		GetPhysicsObject()->ClearForces();
-		GetPhysicsObject()->SetLinearVelocity(Vector3(0, 0, 0));
 		//Debug::Print("Alert State", Vector2(10, 30));
+		this->ChasePlayer(dt);
 		});
 
 	stateMachine->AddState(patrolState);
@@ -60,7 +62,7 @@ StateGameObject::StateGameObject(GameWorld* world) {
 
 	stateMachine->AddTransition(new StateTransition(alertState, patrolState,
 		[&]() -> bool {
-			return !playerDetected;
+			return !playerDetected && chaseTimer >= maxChaseTime;;
 		}));
 }
 
@@ -71,17 +73,25 @@ StateGameObject::~StateGameObject() {
 void StateGameObject::Update(float dt) {
 	GetPhysicsObject()->ClearForces();
 
-	playerDetected = DetectPlayer(50.0f, 45.0f);
+	playerDetected = DetectPlayer(detectionRange, 45.0f);
+
+	if (playerDetected) {
+		chaseTimer = 0.0f; // Reset chase timer when player is detected
+	}
+	else if (stateMachine->GetActiveState() == alertState) {
+		chaseTimer += dt;
+	}
+
 	stateMachine->Update(dt);
 }
 
 void StateGameObject::MoveLeft(float dt) {
-	GetPhysicsObject()->AddForce({ 0,0,-7 });
+	GetPhysicsObject()->AddForce({ 0,0,-5 });
 	counter += dt;
 }
 
 void StateGameObject::MoveRight(float dt) {
-	GetPhysicsObject()->AddForce({ 0,0,7 });
+	GetPhysicsObject()->AddForce({ 0,0,5 });
 	counter -= dt;
 }
 
@@ -138,7 +148,7 @@ void StateGameObject::TurnToFace(Vector3& targetDirection) {
 	float angle = std::acos(dotProduct);
 
 	// Only rotate if the angle is above a small threshold
-	const float rotationThreshold = 0.01f; // Adjust this value as needed
+	const float rotationThreshold = 0.5f; // Adjust this value as needed
 	if (angle > rotationThreshold) {
 		// Determine the rotation direction (clockwise or counterclockwise)
 		float cross = flatCurrentForward.x * flatTargetDirection.z - flatCurrentForward.z * flatTargetDirection.x;
@@ -158,10 +168,29 @@ void StateGameObject::TurnToFace(Vector3& targetDirection) {
 	}
 }
 
+void StateGameObject::StopMoving() {
+	// Stop moving and perform alert behavior
+	GetPhysicsObject()->ClearForces();
+	GetPhysicsObject()->SetLinearVelocity(Vector3(0, 0, 0));
+}
+
+void StateGameObject::ChasePlayer(float dt) {
+	Vector3 currentPosition = GetTransform().GetPosition();
+	Vector3 toPlayer = playerPosition - currentPosition;
+
+	if (Vector::Length(toPlayer) > detectionRange) {
+		playerDetected = false;
+		return;
+	}
+
+	Vector3 direction = Vector::Normalise(toPlayer);
+	TurnToFace(direction);
+	GetPhysicsObject()->AddForce(direction * moveSpeed * 1.0f * dt); // Move faster when chasing
+}
 
 bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle) {
 	Vector3 forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
-	Vector3 position = GetTransform().GetPosition() + Vector3(0, -2, 0);
+	Vector3 position = GetTransform().GetPosition() + Vector3(0, -0.5 * GetTransform().GetScale().y, 0);
 
 	const int numRays = 5;
 	const float angleStep = fanAngle / (numRays - 1);
@@ -181,6 +210,8 @@ bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle) {
 			//if (hitObject->GetName() != "") std::cout << "Ray hit object: " << hitObject->GetName() << std::endl;
 			if (hitObject->GetName() == "Player" && closestCollision.rayDistance <= detectionRange) {
 				//std::cout << "Player detected!" << std::endl;
+				Debug::Print("Player detected!", Vector2(10, 90));
+				playerPosition = hitObject->GetTransform().GetPosition();
 				return true;
 			}
 		}

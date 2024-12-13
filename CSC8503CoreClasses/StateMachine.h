@@ -18,6 +18,10 @@ namespace NCL {
 
 			virtual void Update(float dt); //made it virtual!
 
+			State* GetActiveState() {
+				return activeState;
+			}
+
 		protected:
 			State *				activeState;
 

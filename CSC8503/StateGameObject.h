@@ -1,9 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include <GameWorld.h>
-
-#define PI 3.14159265358979323846
-#define RAD_TO_DEG (180.0 / PI)
+#include <State.h>
 
 namespace NCL {
     namespace CSC8503 {
@@ -16,13 +14,16 @@ namespace NCL {
             virtual void Update(float dt);
 
             void AddWaypoint(Vector3& waypoint);
-			bool IsNearWaypoint(Vector3& point, float threshold = 10.0f);
 			void MoveToWaypoint(float dt);
 
             void TurnToFace(Vector3& targetDirection);
+			void StopMoving();
             bool DetectPlayer(float detectionRange, float fanAngle);
+            void ChasePlayer(float dt);
 
         protected:
+            const float RAD_TO_DEG = 57.295779513f;
+
             void MoveLeft(float dt);
             void MoveRight(float dt);
 
@@ -36,6 +37,15 @@ namespace NCL {
             size_t currentWaypointIndex;
 
             bool playerDetected;
+            Vector3 playerPosition;
+            float chaseTimer;
+            float maxChaseTime;
+            float detectionRange;
+
+            State* patrolState;
+            State* alertState;
+
+            bool IsNearWaypoint(Vector3& point, float threshold = 10.0f);
         };
     }
 }
