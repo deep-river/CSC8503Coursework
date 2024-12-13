@@ -155,7 +155,7 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 
 void GameScene01::InitGameObjects() {
 	//门
-	GameObject* doorLeft = AddCubeToWorld(Vector3(-150, 3, -4), Vector3(1, 2, 4), 10);
+	GameObject* doorLeft = AddCubeToWorld(Vector3(-150, 3, -4), Vector3(1, 2, 4), 60);
 	GameObject* posLeft = AddCubeToWorld(Vector3(-150, 3, -9), Vector3(1, 2, 1), 0);
 
 	OrientationConstraint* orientationConstraintL = new OrientationConstraint(posLeft, doorLeft, PI / 8.0f); //旋转约束为90度
@@ -163,7 +163,7 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(positionConstraintL);
 	world->AddConstraint(orientationConstraintL);
 
-	GameObject* doorRight = AddCubeToWorld(Vector3(-150, 3, 4), Vector3(1, 2, 4), 10);
+	GameObject* doorRight = AddCubeToWorld(Vector3(-150, 3, 4), Vector3(1, 2, 4), 60);
 	GameObject* posRight = AddCubeToWorld(Vector3(-150, 3, 9), Vector3(1, 2, 1), 0);
 
 	OrientationConstraint* orientationConstraintR = new OrientationConstraint(posRight, doorRight, PI / 8.0f); //旋转约束为90度
@@ -172,14 +172,18 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(orientationConstraintR);
 
 	//推箱子 todo:设为绿色
-	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 50);
-	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 50);
-	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 50);
-	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 50);
+	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1);
+	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1);
+	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1);
+	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1);
 
 	//AddEnemyToWorld(Vector3(5, 5, 0));
 	//巡逻路径为(-75, 2, -80) - (-75, 2, 80)
 	simplePatrolObject = AddStateObjectToWorld(Vector3(-75, 5, 0));
+	Vector3 waypoint1 = Vector3(-75, 0, 80);
+	Vector3 waypoint2 = Vector3(-75, 0, -80);
+	simplePatrolObject->AddWaypoint(waypoint1);
+	simplePatrolObject->AddWaypoint(waypoint2);
 
 	AddBonusToWorld(Vector3(-70, 5, 0));
 	AddBonusToWorld(Vector3(-80, 5, 0));
@@ -335,7 +339,7 @@ GameObject* GameScene01::AddOBBCubeToWorld(const Vector3& position, Vector3 dime
 
 PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	float meshSize = 1.0f;
-	float inverseMass = 0.5f;
+	float inverseMass = 10.0f;
 
 	PlayerObject* character = new PlayerObject("Player");
 	SphereVolume* volume = new SphereVolume(1.0f);

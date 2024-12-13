@@ -102,7 +102,7 @@ namespace NCL {
 			//PlayerObject* player;
 			PlayerObject* localPlayer;
 
-			float playerMoveSpeed = 30.0f; //角色移动速度
+			float playerMoveSpeed = 2.0f; //角色移动速度
 			Vector3 playerSpawnPos = Vector3(-160, 5, 0); //角色生成位置
 
 			float gameTimer; //游戏剩余时间
