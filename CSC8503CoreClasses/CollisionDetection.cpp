@@ -477,12 +477,100 @@ bool  CollisionDetection::OBBSphereIntersection(const OBBVolume& volumeA, const 
 bool CollisionDetection::AABBCapsuleIntersection(
 	const CapsuleVolume& volumeA, const Transform& worldTransformA,
 	const AABBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	// Get capsule properties
+	Vector3 capsuleStart = worldTransformA.GetPosition();
+	Vector3 capsuleEnd = capsuleStart + (worldTransformA.GetOrientation() * Vector3(0, volumeA.GetHalfHeight() * 2, 0));
+	float capsuleRadius = volumeA.GetRadius();
+
+	// Get AABB properties
+	Vector3 aabbCenter = worldTransformB.GetPosition();
+	Vector3 aabbHalfSize = volumeB.GetHalfDimensions();
+
+	// Find the closest point on the capsule line segment to the AABB
+	Vector3 capsuleDir = capsuleEnd - capsuleStart;
+	float capsuleLength = Vector::Length(capsuleDir);
+	Vector3 capsuleDirNorm = capsuleDir / capsuleLength;
+
+	Vector3 aabbToStart = aabbCenter - capsuleStart;
+	float t = Vector::Dot(aabbToStart, capsuleDirNorm);
+	t = std::max(0.0f, std::min(capsuleLength, t));
+
+	Vector3 closestPoint = capsuleStart + capsuleDirNorm * t;
+
+	// Check if the closest point is inside the AABB (expanded by capsule radius)
+	Vector3 expanded = aabbHalfSize + Vector3(capsuleRadius, capsuleRadius, capsuleRadius);
+	Vector3 delta = closestPoint - aabbCenter;
+
+	if (std::abs(delta.x) <= expanded.x &&
+		std::abs(delta.y) <= expanded.y &&
+		std::abs(delta.z) <= expanded.z) {
+
+		// Calculate penetration and normal
+		Vector3 penetrationVec = Vector3(
+			std::max(0.0f, expanded.x - std::abs(delta.x)),
+			std::max(0.0f, expanded.y - std::abs(delta.y)),
+			std::max(0.0f, expanded.z - std::abs(delta.z))
+		);
+
+		float penetration = Vector::Length(penetrationVec);
+		Vector3 normal = Vector::Normalise(penetrationVec);
+
+		if (Vector::Dot(normal, aabbToStart) < 0) {
+			normal = -normal;
+		}
+
+		Vector3 localA = closestPoint - capsuleStart;
+		Vector3 localB = -normal * penetration;
+
+		collisionInfo.AddContactPoint(localA, localB, normal, penetration);
+		return true;
+	}
+
 	return false;
 }
 
 bool CollisionDetection::SphereCapsuleIntersection(
 	const CapsuleVolume& volumeA, const Transform& worldTransformA,
 	const SphereVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
+	
+	// Get capsule properties
+	Vector3 capsuleStart = worldTransformA.GetPosition();
+	Vector3 capsuleEnd = capsuleStart + (worldTransformA.GetOrientation() * Vector3(0, volumeA.GetHalfHeight() * 2, 0));
+	float capsuleRadius = volumeA.GetRadius();
+
+	// Get sphere properties
+	Vector3 sphereCenter = worldTransformB.GetPosition();
+	float sphereRadius = volumeB.GetRadius();
+
+	// Find the closest point on the capsule line segment to the sphere center
+	Vector3 capsuleDir = capsuleEnd - capsuleStart;
+	float capsuleLength = Vector::Length(capsuleDir);
+	Vector3 capsuleDirNorm = capsuleDir / capsuleLength;
+
+	Vector3 sphereToStart = sphereCenter - capsuleStart;
+	float t = Vector::Dot(sphereToStart, capsuleDirNorm);
+	t = std::max(0.0f, std::min(capsuleLength, t));
+
+	Vector3 closestPoint = capsuleStart + capsuleDirNorm * t;
+
+	// Check for intersection
+	Vector3 delta = sphereCenter - closestPoint;
+	float distanceSquared = Vector::LengthSquared(delta);
+	float radiusSum = capsuleRadius + sphereRadius;
+
+	if (distanceSquared <= radiusSum * radiusSum) {
+		float distance = std::sqrt(distanceSquared);
+		float penetration = radiusSum - distance;
+
+		Vector3 normal = Vector::Normalise(delta);
+		Vector3 localA = closestPoint - capsuleStart;
+		Vector3 localB = -normal * sphereRadius;
+
+		collisionInfo.AddContactPoint(localA, localB, normal, penetration);
+		return true;
+	}
+
 	return false;
 }
 
