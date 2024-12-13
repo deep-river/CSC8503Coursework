@@ -175,8 +175,8 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(orientationConstraintR);
 
 	//推箱子 OBB vs Sphere(player volume) collision
-	AddOBBCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
-	AddOBBCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddOBBCubeToWorld(Vector3(-120, 15, -6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddOBBCubeToWorld(Vector3(-120, 10, -2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 	AddOBBCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 	AddOBBCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 
@@ -525,8 +525,9 @@ void GameScene01::UpdatePlayer(float dt) {
 		//localPlayer->GetTransform().SetPosition(playerSpawnPos);
 		isGameOver = true;
 	}
-	//float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
-	//localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
+	/*float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
+	localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));*/
+
 	// Use angular impulse to rotate the player
 	Vector3 rotationAxis = Vector3(0, 1, 0);
 	float yaw = Window::GetMouse()->GetRelativePosition().x * 1.0f;

@@ -188,12 +188,14 @@ void StateGameObject::StopMoving() {
 void StateGameObject::ChasePlayer(float dt) {
 	Vector3 currentPosition = GetTransform().GetPosition();
 	Vector3 toPlayer = playerPosition - currentPosition;
+	Vector3 realtimePlayerPosition = targetPlayer->GetTransform().GetPosition();
+	Vector3 realtimeToPlayer = realtimePlayerPosition - currentPosition;
 
 	if (Vector::Length(toPlayer) > detectionRange) {
 		playerDetected = false;
 		return;
 	}
-	else if (Vector::Length(toPlayer) < chaseThreshold) {
+	else if (Vector::Length(realtimeToPlayer) < chaseThreshold) {
 		targetPlayer->SetCaught(true);
 	}
 
