@@ -120,35 +120,42 @@ void StateGameObject::MoveToWaypoint(float dt) {
 
 void StateGameObject::TurnToFace(Vector3& targetDirection) {
 	if (Vector::Length(targetDirection) < 0.001f) {
-		// 避免处理接近零的向量
-		return;
+		return; // Avoid processing near-zero vectors
 	}
 
+	// Project the target direction onto the XZ plane
+	Vector3 flatTargetDirection = Vector3(targetDirection.x, 0, targetDirection.z);
+	flatTargetDirection = Vector::Normalise(flatTargetDirection);
+
+	// Get the current forward direction
 	Vector3 currentForward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
-	Vector3 desiredForward = Vector::Normalise(targetDirection);
+	Vector3 flatCurrentForward = Vector3(currentForward.x, 0, currentForward.z);
+	flatCurrentForward = Vector::Normalise(flatCurrentForward);
 
-	// 检查向量是否已经对齐
-	/*if (Vector::Length(currentForward - desiredForward) < 0.001f) {
-		return;
-	}*/
+	// Calculate the angle between the current forward and target direction
+	float dotProduct = Vector::Dot(flatCurrentForward, flatTargetDirection);
+	dotProduct = std::max(-1.0f, std::min(1.0f, dotProduct)); // Clamp to [-1, 1]
+	float angle = std::acos(dotProduct);
 
-	// 计算旋转轴和角度
-	Vector3 rotationAxis = Vector::Normalise(Vector::Cross(currentForward, desiredForward));
+	// Only rotate if the angle is above a small threshold
+	const float rotationThreshold = 0.01f; // Adjust this value as needed
+	if (angle > rotationThreshold) {
+		// Determine the rotation direction (clockwise or counterclockwise)
+		float cross = flatCurrentForward.x * flatTargetDirection.z - flatCurrentForward.z * flatTargetDirection.x;
+		if (cross < 0) {
+			angle = -angle;
+		}
 
-	// 使用安全的点积计算
-	float dotProduct = Vector::Dot(currentForward, desiredForward);
-	dotProduct = std::max(-1.0f, std::min(1.0f, dotProduct)); // 将点积限制在 [-1, 1] 范围内
-	float rotationAngle = std::acos(dotProduct);
+		// Create a rotation quaternion around the Y-axis
+		Quaternion rotationQuaternion = Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), angle * RAD_TO_DEG);
 
-	// 创建旋转四元数
-	Quaternion rotationQuaternion = Quaternion::AxisAngleToQuaterion(rotationAxis, rotationAngle * RAD_TO_DEG);
+		// Apply rotation
+		Quaternion currentOrientation = GetTransform().GetOrientation();
+		Quaternion newOrientation = rotationQuaternion * currentOrientation;
+		newOrientation.Normalise();
 
-	// 应用旋转
-	Quaternion currentOrientation = GetTransform().GetOrientation();
-	Quaternion newOrientation = currentOrientation * rotationQuaternion;
-	newOrientation.Normalise(); // 确保四元数是单位四元数
-
-	GetTransform().SetOrientation(newOrientation);
+		GetTransform().SetOrientation(newOrientation);
+	}
 }
 
 

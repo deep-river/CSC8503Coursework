@@ -55,6 +55,7 @@ void GameScene01::InitialiseAssets() {
 	enemyMesh = renderer->LoadMesh("Keeper.msh");
 	bonusMesh = renderer->LoadMesh("19463_Kitten_Head_v1.msh");
 	capsuleMesh = renderer->LoadMesh("capsule.msh");
+	gooseMesh = renderer->LoadMesh("goose.msh");
 
 	coinMesh = renderer->LoadMesh("coin.msh");
 
@@ -179,13 +180,22 @@ void GameScene01::InitGameObjects() {
 	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 
-	//AddEnemyToWorld(Vector3(5, 5, 0));
-	//巡逻路径为(-75, 2, -80) - (-75, 2, 80)
+	//简单巡逻敌人，巡逻路径为(-75, 2, -80) - (-75, 2, 80)
 	simplePatrolObject = AddStateObjectToWorld(Vector3(-75, 5, 0));
 	Vector3 waypoint1 = Vector3(-75, 0, 80);
 	Vector3 waypoint2 = Vector3(-75, 0, -80);
 	simplePatrolObject->AddWaypoint(waypoint1);
 	simplePatrolObject->AddWaypoint(waypoint2);
+	//goose，巡逻路径为(-10, 1.5, -15) - (25, 1.5, -15) - (25, 1.5, 20) - (-10, 1.5, 20)
+	/*gooseObject = AddGooseToWorld(Vector3(-10, 1.5, -15));
+	Vector3 gWaypoint1 = Vector3(-10, 1.5, -15);
+	Vector3 gWaypoint2 = Vector3(25, 1.5, -15);
+	Vector3 gWaypoint3 = Vector3(25, 1.5, 20);
+	Vector3 gWaypoint4 = Vector3(-10, 1.5, 20);
+	gooseObject->AddWaypoint(gWaypoint1);
+	gooseObject->AddWaypoint(gWaypoint2);
+	gooseObject->AddWaypoint(gWaypoint3);
+	gooseObject->AddWaypoint(gWaypoint4);*/
 
 	AddBonusToWorld(Vector3(-70, 5, 0));
 	AddBonusToWorld(Vector3(-80, 5, 0));
@@ -398,6 +408,27 @@ GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
 	world->AddGameObject(character);
 
 	return character;
+}
+
+StateGameObject* GameScene01::AddGooseToWorld(const Vector3& position) {
+	StateGameObject* apple = new StateGameObject(world);
+
+	SphereVolume* volume = new SphereVolume(1.0f);
+	apple->SetBoundingVolume((CollisionVolume*)volume);
+	apple->GetTransform()
+		.SetScale(Vector3(1, 1, 1))
+		.SetPosition(position);
+
+	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), gooseMesh, nullptr, basicShader));
+	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
+
+	apple->GetPhysicsObject()->SetInverseMass(1.0f);
+	apple->GetPhysicsObject()->InitSphereInertia();
+	apple->GetRenderObject()->SetColour(Debug::RED);
+
+	world->AddGameObject(apple);
+
+	return apple;
 }
 
 CollectibleObject* GameScene01::AddBonusToWorld(const Vector3& position) {

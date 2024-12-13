@@ -50,6 +50,7 @@ namespace NCL {
 			PlayerObject* AddPlayerToWorld(const Vector3& position);
 			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
+			StateGameObject* AddGooseToWorld(const Vector3& position);
 			CollectibleObject* AddBonusToWorld(const Vector3& position);
 
 			void BridgeConstraintTest();
@@ -94,6 +95,7 @@ namespace NCL {
 			Mesh* enemyMesh = nullptr;
 			Mesh* bonusMesh = nullptr;
 			Mesh* coinMesh = nullptr;
+			Mesh* gooseMesh = nullptr;
 
 			Vector3 lockedOffset = Vector3(0, 5, -10); //相机对跟踪对象的位置偏移量
 			float cameraDistance = -10.0f; //相机与跟踪对象的距离
@@ -112,6 +114,7 @@ namespace NCL {
 			bool showMenu = false; 
 
 			StateGameObject* simplePatrolObject;
+			StateGameObject* gooseObject;
 			
 			std::vector<CollectibleObject*> collectibles;
 
