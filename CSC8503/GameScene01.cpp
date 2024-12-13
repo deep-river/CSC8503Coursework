@@ -519,8 +519,14 @@ void GameScene01::UpdateGameTimer(float dt) {
 void GameScene01::UpdatePlayer(float dt) {
 	if (!localPlayer) return;
 
-	float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
-	localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
+	//float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
+	//localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
+	// Use angular impulse to rotate the player
+	Vector3 rotationAxis = Vector3(0, 1, 0);
+	float yaw = Window::GetMouse()->GetRelativePosition().x * 1.0f;
+	float rotationStrength = 0.1f; // Adjust this value to control rotation speed
+	Vector3 angularImpulse = -rotationAxis * yaw * rotationStrength * dt;
+	localPlayer->GetPhysicsObject()->ApplyAngularImpulse(angularImpulse);
 
 	Quaternion objOrientation = localPlayer->GetTransform().GetOrientation();
 	Vector3 forward = objOrientation * Vector3(0, 0, -1);

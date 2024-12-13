@@ -23,4 +23,7 @@ void CollectibleObject::OnCollisionBegin(GameObject* otherObject) {
 		player->AddScore(1);
 		isActive = false;
 	}
+	else if (otherObject->GetLayer() == Layer::Enemy) {
+		isActive = false;
+	}
 }
