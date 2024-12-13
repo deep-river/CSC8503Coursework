@@ -20,9 +20,18 @@ namespace NCL {
 			void ResetScore() {
 				playerScore = 0;
 			}
+			
+			void SetCaught(bool caught) {
+				isCaught = caught;
+			}
+
+			bool IsCaught() const {
+				return isCaught;
+			}
 
 		protected:
 			int playerScore = 0; //玩家分数
+			bool isCaught = false; //玩家是否被抓住
 		};
 	}
 }

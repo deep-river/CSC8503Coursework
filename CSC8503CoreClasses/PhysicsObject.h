@@ -83,6 +83,10 @@ namespace NCL {
 				return springConstant;
 			}
 
+			float GetFriction() const {
+				return friction;
+			}
+
 		protected:
 			const CollisionVolume* volume;
 			Transform*		transform;

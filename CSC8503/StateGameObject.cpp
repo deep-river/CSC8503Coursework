@@ -5,6 +5,7 @@
 #include "PhysicsObject.h"
 #include "Ray.h"
 #include "Debug.h"
+#include "PlayerObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -192,6 +193,9 @@ void StateGameObject::ChasePlayer(float dt) {
 		playerDetected = false;
 		return;
 	}
+	else if (Vector::Length(toPlayer) < chaseThreshold) {
+		targetPlayer->SetCaught(true);
+	}
 
 	Vector3 direction = Vector::Normalise(toPlayer);
 	TurnToFace(direction);
@@ -238,6 +242,7 @@ bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle, int num
 			if (hitObject->GetName() == "Player" && closestCollision.rayDistance <= detectionRange) {
 				//std::cout << "Player detected!" << std::endl;
 				Debug::Print("Player detected!", Vector2(10, 90), Debug::RED);
+				targetPlayer = (PlayerObject*)hitObject;
 				playerPosition = hitObject->GetTransform().GetPosition();
 				return true;
 			}

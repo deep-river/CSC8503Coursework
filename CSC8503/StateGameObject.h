@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <GameWorld.h>
 #include <State.h>
+#include "PlayerObject.h"
 
 namespace NCL {
     namespace CSC8503 {
@@ -45,6 +46,8 @@ namespace NCL {
 
             State* patrolState;
             State* alertState;
+            PlayerObject* targetPlayer;
+            float chaseThreshold = 2.0f;
 
             Vector3 lastPatrolPosition;
 

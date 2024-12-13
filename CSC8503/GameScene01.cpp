@@ -382,6 +382,8 @@ PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	character->GetPhysicsObject()->InitSphereInertia();
 	character->GetRenderObject()->SetColour(playerColour);
 
+	character->SetCaught(false);
+
 	world->AddGameObject(character);
 	return character;
 }
@@ -519,6 +521,10 @@ void GameScene01::UpdateGameTimer(float dt) {
 void GameScene01::UpdatePlayer(float dt) {
 	if (!localPlayer) return;
 
+	if (localPlayer->IsCaught()) {
+		//localPlayer->GetTransform().SetPosition(playerSpawnPos);
+		isGameOver = true;
+	}
 	//float yaw = Window::GetMouse()->GetRelativePosition().x * 100.0f;
 	//localPlayer->GetTransform().SetOrientation(localPlayer->GetTransform().GetOrientation() * Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), -yaw * dt));
 	// Use angular impulse to rotate the player
@@ -557,6 +563,7 @@ void GameScene01::UpdatePlayer(float dt) {
 		movement *= playerMoveSpeed * dt;
 		localPlayer->GetPhysicsObject()->ApplyLinearImpulse(movement);
 	}
+	
 }
 
 void GameScene01::UpdateCamera(float dt) {
