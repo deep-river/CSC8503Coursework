@@ -15,6 +15,8 @@ namespace NCL {
 			bool IsNearWaypoint(Vector3& point, float threshold = 10.0f);
 			void MoveToWaypoint(float dt);
 
+            void TurnAround();
+
         protected:
             void MoveLeft(float dt);
             void MoveRight(float dt);

@@ -45,8 +45,10 @@ namespace NCL {
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f, bool isHollow = false); //Added isHollow parameter, true = hollow object, false = solid object
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
+			GameObject* AddOBBCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
 
 			PlayerObject* AddPlayerToWorld(const Vector3& position);
+			StateGameObject* AddStateObjectToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			CollectibleObject* AddBonusToWorld(const Vector3& position);
 
@@ -101,13 +103,15 @@ namespace NCL {
 			PlayerObject* localPlayer;
 
 			float playerMoveSpeed = 30.0f; //角色移动速度
-			Vector3 playerSpawnPos = Vector3(-130, 10, 0); //角色生成位置
+			Vector3 playerSpawnPos = Vector3(-160, 5, 0); //角色生成位置
 
 			float gameTimer; //游戏剩余时间
 			float gameDuration = 60.0f; //每局游戏持续时间
 			//int playerScore = 0; //玩家分数
 			bool isGameOver = false;
 			bool showMenu = false; 
+
+			StateGameObject* simplePatrolObject;
 			
 			std::vector<CollectibleObject*> collectibles;
 

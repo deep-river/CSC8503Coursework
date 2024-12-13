@@ -26,10 +26,10 @@ StateGameObject::StateGameObject() {
 	stateMachine->AddState(stateB);
 
 	stateMachine->AddTransition(new StateTransition(stateA, stateB, [&]()->bool {
-		return this->counter > 1.0f;
+		return this->counter > 8.0f;
 	}));
 	stateMachine->AddTransition(new StateTransition(stateB, stateA, [&]()->bool {
-		return this->counter < -1.0f;
+		return this->counter < -8.0f;
 	}));
 
 	State* stateMoveAlongWaypoints = new State([&](float dt)->void {
@@ -46,12 +46,12 @@ void StateGameObject::Update(float dt) {
 }
 
 void StateGameObject::MoveLeft(float dt) {
-	GetPhysicsObject()->AddForce({ -100,0,0 });
+	GetPhysicsObject()->AddForce({ 0,0,-7 });
 	counter += dt;
 }
 
 void StateGameObject::MoveRight(float dt) {
-	GetPhysicsObject()->AddForce({ 100,0,0 });
+	GetPhysicsObject()->AddForce({ 0,0,7 });
 	counter -= dt;
 }
 
@@ -78,4 +78,10 @@ void StateGameObject::MoveToWaypoint(float dt) {
 
 	Vector3 direction = Vector::Normalise(toPoint);
 	GetPhysicsObject()->AddForce(direction * moveSpeed);
+}
+
+void StateGameObject::TurnAround() {
+	Quaternion currentOrientation = GetTransform().GetOrientation();
+	Quaternion newOrientation = Quaternion::AxisAngleToQuaterion(Vector3(0, 1, 0), 180);
+	GetTransform().SetOrientation(currentOrientation * newOrientation);
 }

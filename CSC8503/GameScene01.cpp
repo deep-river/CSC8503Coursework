@@ -39,6 +39,7 @@ GameScene01::GameScene01() : controller(*Window::GetWindow()->GetKeyboard(), *Wi
 	controller.MapAxis(3, "XLook");
 	controller.MapAxis(4, "YLook");
 
+	simplePatrolObject = nullptr;
 	InitialiseAssets();
 	std::cout << ">>>>>>>>>>[Scene: GameScene01 begin!]<<<<<<<<<<" << std::endl;
 
@@ -74,6 +75,7 @@ GameScene01::~GameScene01() {
 	delete basicShader;
 
 	delete localPlayer;
+	delete simplePatrolObject;
 	
 	for (auto collectible : collectibles) {
 		delete collectible;
@@ -124,33 +126,66 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 	// Create terrain blocks
 	// 1. Create a U-shaped path
 	for (int i = 0; i < 10; ++i) {
-		AddCubeToWorld(Vector3(-40 + i * blockSize, 5, -40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-		AddCubeToWorld(Vector3(-40 + i * blockSize, 5, 40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+		AddCubeToWorld(Vector3(0 + i * blockSize, 5, -40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+		AddCubeToWorld(Vector3(0 + i * blockSize, 5, 40), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 	}
 	for (int i = 0; i < 8; ++i) {
-		AddCubeToWorld(Vector3(50, 5, -30 + i * blockSize), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+		AddCubeToWorld(Vector3(90, 5, -30 + i * blockSize), Vector3(blockSize / 2, 10, blockSize / 2), 0)->GetRenderObject()->SetColour(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 	}
 
 	// 2. Create some obstacles and decorative elements
-	AddCubeToWorld(Vector3(0, 7.5, 0), Vector3(blockSize, 15, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.3f, 0.3f, 1.0f));
-	AddCubeToWorld(Vector3(-30, 10, 0), Vector3(blockSize, 20, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.3f, 1.0f));
-	AddCubeToWorld(Vector3(30, 12.5, 0), Vector3(blockSize, 25, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.3f, 0.7f, 1.0f));
+	AddCubeToWorld(Vector3(40, 7.5, 0), Vector3(blockSize, 15, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.3f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(10, 10, 0), Vector3(blockSize, 20, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(70, 12.5, 0), Vector3(blockSize, 25, blockSize), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.3f, 0.7f, 1.0f));
 
 	// 3. Create open areas for items
 	// Left open area
-	AddCubeToWorld(Vector3(-30, 2.5, -30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.7f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(10, 2.5, -30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.7f, 0.3f, 1.0f));
 	// Right open area
-	AddCubeToWorld(Vector3(30, 2.5, 30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
+	AddCubeToWorld(Vector3(70, 2.5, 30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
+
+	//出生点走道与背后围墙
+	AddCubeToWorld(Vector3(-140, 5, -50), Vector3(blockSize * 6, 5, blockSize * 4), 0);
+	AddCubeToWorld(Vector3(-140, 5, 50), Vector3(blockSize * 6, 5, blockSize * 4), 0);
+	AddCubeToWorld(Vector3(-180, 5, 0), Vector3(blockSize * 0.5, 5, blockSize * 4), 0);
+
+	AddCubeToWorld(Vector3(-50, 5, -50), Vector3(blockSize * 2, 5, blockSize * 4), 0);
+	AddCubeToWorld(Vector3(-50, 5, 50), Vector3(blockSize * 2, 5, blockSize * 4), 0);
 }
 
 void GameScene01::InitGameObjects() {
+	//门
+	GameObject* doorLeft = AddCubeToWorld(Vector3(-150, 3, -4), Vector3(1, 2, 4), 10);
+	GameObject* posLeft = AddCubeToWorld(Vector3(-150, 3, -9), Vector3(1, 2, 1), 0);
+
+	OrientationConstraint* orientationConstraintL = new OrientationConstraint(posLeft, doorLeft, PI / 8.0f); //旋转约束为90度
+	PositionConstraint* positionConstraintL = new PositionConstraint(posLeft, doorLeft, 5);
+	world->AddConstraint(positionConstraintL);
+	world->AddConstraint(orientationConstraintL);
+
+	GameObject* doorRight = AddCubeToWorld(Vector3(-150, 3, 4), Vector3(1, 2, 4), 10);
+	GameObject* posRight = AddCubeToWorld(Vector3(-150, 3, 9), Vector3(1, 2, 1), 0);
+
+	OrientationConstraint* orientationConstraintR = new OrientationConstraint(posRight, doorRight, PI / 8.0f); //旋转约束为90度
+	PositionConstraint* positionConstraintR = new PositionConstraint(posRight, doorRight, 5);
+	world->AddConstraint(positionConstraintR);
+	world->AddConstraint(orientationConstraintR);
+
+	//推箱子 todo:设为绿色
+	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 50);
+	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 50);
+	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 50);
+	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 50);
+
 	//AddEnemyToWorld(Vector3(5, 5, 0));
-	//todo: 添加可收集物体
-	AddBonusToWorld(Vector3(-130, 10, 10));
-	AddBonusToWorld(Vector3(-130, 10, 20));
-	AddBonusToWorld(Vector3(-130, 10, 30));
-	AddBonusToWorld(Vector3(-130, 10, 40));
-	AddBonusToWorld(Vector3(-130, 10, 50));
+	//巡逻路径为(-75, 2, -80) - (-75, 2, 80)
+	simplePatrolObject = AddStateObjectToWorld(Vector3(-75, 5, 0));
+
+	AddBonusToWorld(Vector3(-70, 5, 0));
+	AddBonusToWorld(Vector3(-80, 5, 0));
+	AddBonusToWorld(Vector3(-90, 5, 0));
+	AddBonusToWorld(Vector3(-100, 5, 0));
+	AddBonusToWorld(Vector3(-110, 5, 0));
 }
 
 void GameScene01::InitPlayer() {
@@ -282,6 +317,22 @@ GameObject* GameScene01::AddCubeToWorld(const Vector3& position, Vector3 dimensi
 	return cube;
 }
 
+GameObject* GameScene01::AddOBBCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass) {
+	GameObject* cube = new GameObject();
+
+	OBBVolume* volume = new OBBVolume(dimensions);
+	cube->SetBoundingVolume((CollisionVolume*)volume);
+	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2.0f);
+
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
+	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
+	cube->GetPhysicsObject()->InitCubeInertia();
+	world->AddGameObject(cube);
+
+	return cube;
+}
+
 PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	float meshSize = 1.0f;
 	float inverseMass = 0.5f;
@@ -300,6 +351,27 @@ PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 
 	world->AddGameObject(character);
 	return character;
+}
+
+StateGameObject* GameScene01::AddStateObjectToWorld(const Vector3& position) {
+	StateGameObject* apple = new StateGameObject();
+
+	SphereVolume* volume = new SphereVolume(2.5f);
+	apple->SetBoundingVolume((CollisionVolume*)volume);
+	apple->GetTransform()
+		.SetScale(Vector3(4, 4, 4))
+		.SetPosition(position);
+
+	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), enemyMesh, nullptr, basicShader));
+	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
+
+	apple->GetPhysicsObject()->SetInverseMass(1.0f);
+	apple->GetPhysicsObject()->InitSphereInertia();
+	apple->GetRenderObject()->SetColour(Debug::RED);
+
+	world->AddGameObject(apple);
+
+	return apple;
 }
 
 GameObject* GameScene01::AddEnemyToWorld(const Vector3& position) {
@@ -357,6 +429,10 @@ void GameScene01::UpdateGame(float dt) {
 			UpdatePlayer(dt);
 			UpdateCamera(dt);
 			UpdateGameUI();
+
+			if (simplePatrolObject) {
+				simplePatrolObject->Update(dt);
+			}
 
 			UpdateCollectibles(dt);
 		}
@@ -449,6 +525,10 @@ void GameScene01::UpdateGameUI() {
 		Debug::Print("Press (ESC) to toggle menu", Vector2(50, 10), Debug::WHITE);
 		Debug::Print("Time left: " + std::to_string(static_cast<int>(gameTimer)), Vector2(2, 5), Debug::YELLOW);
 		Debug::Print("Score: " + std::to_string(localPlayer->GetScore()), Vector2(2, 10), Debug::YELLOW);
+
+        Vector3 playerPos = localPlayer->GetTransform().GetPosition();
+        std::string playerPosStr = "Player Position: (" + std::to_string(playerPos.x) + ", " + std::to_string(playerPos.y) + ", " + std::to_string(playerPos.z) + ")";
+        Debug::Print(playerPosStr, Vector2(2, 100), Debug::WHITE);
 	}
 }
 

@@ -8,6 +8,26 @@ namespace NCL {
 		class GameServer;
 		class GameClient;
 		class NetworkPlayer;
+		class FullPacket;
+		class DeltaPacket;
+		class ClientPacket;
+		//class MessagePacket;
+
+		enum PlayerNetworkMessages {
+			None,
+			NEW_PLAYER_CONNECTED,
+			PLAYER_DISCONNECTED,
+		};
+
+		struct MessagePacket : public GamePacket {
+			short playerID;
+			short messageID = PlayerNetworkMessages::None;
+
+			MessagePacket() {
+				type = Message;
+				size = sizeof(short) * 2;
+			}
+		};
 
 		//class NetworkedGame : public TutorialGame, public PacketReceiver {
 		class NetworkedGame : public GameScene01, public PacketReceiver {
@@ -36,6 +56,8 @@ namespace NCL {
 
 			PlayerObject* AddNetPlayerToWorld(const Vector3& position, int playerID);
 
+
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
@@ -52,12 +74,17 @@ namespace NCL {
 			std::vector<NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
-			//GameObject* localPlayer;
-			//PlayerObject* localPlayer;
 
 			bool isNetworkedGameStarted = false;
 
 			int PlayerIDIndex = 0;
+			int GlobalStateID;
+
+			void OnReceiveFullState(FullPacket* packet);
+			void OnReceiveDeltaState(DeltaPacket* packet);
+			void OnReceivePlayerConnected(MessagePacket* packet);
+			void OnReceivePlayerDisconnected(MessagePacket* packet);
+			void OnReceiveMessage(MessagePacket* packet);
 		};
 	}
 }

@@ -6,15 +6,6 @@
 
 #define COLLISION_MSG 30
 
-struct MessagePacket : public GamePacket {
-	short playerID;
-	short messageID;
-
-	MessagePacket() {
-		type = Message;
-		size = sizeof(short) * 2;
-	}
-};
 
 NetworkedGame::NetworkedGame()	{
 	thisServer = nullptr;
@@ -41,7 +32,6 @@ NetworkedGame::~NetworkedGame()	{
 void NetworkedGame::InitNetworkedGameScene() {
 	InitWorld();
 	InitCamera();
-	InitGameObjects();
 }
 
 void NetworkedGame::StartAsServer() {
@@ -52,7 +42,14 @@ void NetworkedGame::StartAsServer() {
 	isNetworkedGameStarted = true;
 	std::cout << ">>>>>>>>>>[NetworkedGame: Started as server!]<<<<<<<<<<" << std::endl;
 
-	StartNetLevel();
+	//StartNetLevel();
+
+	InitGameObjects();
+	GlobalStateID = -1;
+
+	PlayerObject* player = AddNetPlayerToWorld(playerSpawnPos, GeneratePlayerID());
+	localPlayer = player;
+
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -72,7 +69,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	isNetworkedGameStarted = true;
 	std::cout << ">>>>>>>>>>[NetworkedGame: Started as client!]<<<<<<<<<<" << std::endl;
 
-	StartLevel();
+	StartNetLevel();
 }
 
 void NetworkedGame::UpdateGame(float dt) {
@@ -127,6 +124,7 @@ void NetworkedGame::UpdateAsServer(float dt) {
 	else {
 		BroadcastSnapshot(true);
 	}
+	UpdateMinimumState();
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
@@ -190,11 +188,14 @@ void NetworkedGame::UpdateMinimumState() {
 }
 
 void NetworkedGame::StartNetLevel() {
+	InitGameObjects();
 	SpawnPlayer();
+	GlobalStateID = -1;
 }
 
 void NetworkedGame::SpawnPlayer() {
-	AddNetPlayerToWorld(playerSpawnPos, GeneratePlayerID());
+	PlayerObject* player = AddNetPlayerToWorld(playerSpawnPos, GeneratePlayerID());
+	localPlayer = player;
 }
 
 PlayerObject* NetworkedGame::AddNetPlayerToWorld(const Vector3& position, int playerID) {
@@ -202,15 +203,92 @@ PlayerObject* NetworkedGame::AddNetPlayerToWorld(const Vector3& position, int pl
 
 	NetworkObject* netObj = new NetworkObject(*player, playerID);
 	player->SetNetworkObject(netObj);
+	serverPlayers[playerID] = player;
 	std::cout << "Player " << playerID << " spawned!" << std::endl;
-
-	localPlayer = player;
 
 	return player;
 }
 
-void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
+void NetworkedGame::OnReceiveFullState(FullPacket* packet) {
+	auto itr = serverPlayers.find(packet->objectID);
+	if (itr == serverPlayers.end()) {
+		std::cout << "Client Num " << " can't find netObject" << std::endl;
+		return;
+	}
+	serverPlayers[packet->objectID]->GetNetworkObject()->ReadPacket(*packet);
 	
+	if (packet->fullState.stateID > GlobalStateID) { 
+		GlobalStateID = packet->fullState.stateID; 
+	}
+}
+
+void NetworkedGame::OnReceiveDeltaState(DeltaPacket* packet) {
+	auto itr = serverPlayers.find(packet->objectID);
+	if (itr == serverPlayers.end()) {
+		std::cout << "Client Num " << " can't find netObject" << std::endl;
+		return;
+	}
+	serverPlayers[packet->objectID]->GetNetworkObject()->ReadPacket(*packet);
+}
+
+void NetworkedGame::OnReceivePlayerConnected(MessagePacket* packet) {
+	int newPlayerID = GeneratePlayerID();
+
+	PlayerObject* newPlayer = AddNetPlayerToWorld(playerSpawnPos, newPlayerID);
+
+	if (newPlayer) {
+		// Notify all clients about the new player
+		MessagePacket newPlayerPacket;
+		newPlayerPacket.messageID = NEW_PLAYER_CONNECTED;
+		newPlayerPacket.playerID = newPlayerID;
+		thisServer->SendGlobalPacket(newPlayerPacket);
+
+		std::cout << "Player " << newPlayerID << " connected and spawned at position: "
+			<< playerSpawnPos.x << ", " << playerSpawnPos.y << std::endl;
+	}
+	else {
+		std::cout << "Failed to spawn player " << newPlayerID << std::endl;
+	}
+}
+
+void NetworkedGame::OnReceivePlayerDisconnected(MessagePacket* packet) {
+
+}
+
+void NetworkedGame::OnReceiveMessage(MessagePacket* packet) {
+	
+}
+
+void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
+	switch (type) {
+    case Full_State:
+        if (auto* packet = static_cast<FullPacket*>(payload)) {
+            OnReceiveFullState(packet);
+        }
+        break;
+    case Delta_State:
+        if (auto* packet = static_cast<DeltaPacket*>(payload)) {
+            OnReceiveDeltaState(packet);
+        }
+        break;
+    case Player_Connected:
+        if (auto* packet = static_cast<MessagePacket*>(payload)) {
+            OnReceivePlayerConnected(packet);
+        }
+        break;
+    case Player_Disconnected:
+        if (auto* packet = static_cast<MessagePacket*>(payload)) {
+            OnReceivePlayerDisconnected(packet);
+        }
+        break;
+    case Message:
+        if (auto* packet = static_cast<MessagePacket*>(payload)) {
+            OnReceiveMessage(packet);
+        }
+        break;
+    default:
+        std::cout << "Received unknown packet type: " << type << std::endl;
+    }
 }
 
 void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
