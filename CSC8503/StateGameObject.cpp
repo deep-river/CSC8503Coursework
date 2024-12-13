@@ -19,7 +19,7 @@ StateGameObject::StateGameObject(GameWorld* world) {
 	playerDetected = false;
 	chaseTimer = 0.0f;
 	maxChaseTime = 3.0f; // 5 seconds of chasing before returning to patrol
-	detectionRange = 30.0f;
+	detectionRange = 30.0f; // distance
 	lastPatrolPosition = GetTransform().GetPosition();
 
 	stateMachine = new StateMachine();
@@ -81,7 +81,7 @@ StateGameObject::~StateGameObject() {
 void StateGameObject::Update(float dt) {
 	GetPhysicsObject()->ClearForces();
 
-	playerDetected = DetectPlayer(detectionRange, 45.0f);
+	playerDetected = DetectPlayer(detectionRange, 45.0f, 5);
 
 	if (playerDetected) {
 		chaseTimer = 0.0f; // Reset chase timer when player is detected
@@ -214,11 +214,10 @@ void StateGameObject::ReturnToPatrol() {
 	chaseTimer = 0.0f;
 }
 
-bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle) {
+bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle, int numRays) {
 	Vector3 forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	Vector3 position = GetTransform().GetPosition() + Vector3(0, -0.5 * GetTransform().GetScale().y, 0);
 
-	const int numRays = 5;
 	const float angleStep = fanAngle / (numRays - 1);
 
 	for (int i = 0; i < numRays; ++i) {

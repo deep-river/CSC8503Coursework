@@ -18,7 +18,7 @@ namespace NCL {
 
             void TurnToFace(Vector3& targetDirection);
 			void StopMoving();
-            bool DetectPlayer(float detectionRange, float fanAngle);
+            bool DetectPlayer(float detectionRange, float fanAngle, int numRays);
             void ChasePlayer(float dt);
             void ReturnToPatrol();
 
