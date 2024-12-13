@@ -108,7 +108,7 @@ namespace NCL {
 			Vector3 playerSpawnPos = Vector3(-160, 5, 0); //角色生成位置
 
 			float gameTimer; //游戏剩余时间
-			float gameDuration = 600.0f; //每局游戏持续时间
+			float gameDuration = 60.0f; //每局游戏持续时间
 			//int playerScore = 0; //玩家分数
 			bool isGameOver = false;
 			bool showMenu = false; 

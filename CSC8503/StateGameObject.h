@@ -20,6 +20,7 @@ namespace NCL {
 			void StopMoving();
             bool DetectPlayer(float detectionRange, float fanAngle);
             void ChasePlayer(float dt);
+            void ReturnToPatrol();
 
         protected:
             const float RAD_TO_DEG = 57.295779513f;
@@ -44,6 +45,8 @@ namespace NCL {
 
             State* patrolState;
             State* alertState;
+
+            Vector3 lastPatrolPosition;
 
             bool IsNearWaypoint(Vector3& point, float threshold = 10.0f);
         };

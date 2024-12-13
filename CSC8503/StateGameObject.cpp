@@ -19,7 +19,8 @@ StateGameObject::StateGameObject(GameWorld* world) {
 	playerDetected = false;
 	chaseTimer = 0.0f;
 	maxChaseTime = 3.0f; // 5 seconds of chasing before returning to patrol
-	detectionRange = 50.0f;
+	detectionRange = 30.0f;
+	lastPatrolPosition = GetTransform().GetPosition();
 
 	stateMachine = new StateMachine();
 
@@ -43,11 +44,11 @@ StateGameObject::StateGameObject(GameWorld* world) {
 	State* stateMoveAlongWaypoints = new State([&](float dt)->void {
 		this->MoveToWaypoint(dt);
 	});*/
-	State* patrolState = new State([&](float dt)->void {
+	patrolState = new State([&](float dt)->void {
 		this->MoveToWaypoint(dt);
 		//Debug::Print("Patrol State", Vector2(10, 30));
 		});
-	State* alertState = new State([&](float dt) -> void {
+	alertState = new State([&](float dt) -> void {
 		//Debug::Print("Alert State", Vector2(10, 30));
 		this->ChasePlayer(dt);
 		});
@@ -62,12 +63,19 @@ StateGameObject::StateGameObject(GameWorld* world) {
 
 	stateMachine->AddTransition(new StateTransition(alertState, patrolState,
 		[&]() -> bool {
-			return !playerDetected && chaseTimer >= maxChaseTime;;
+			if (!playerDetected && chaseTimer >= maxChaseTime) {
+				ReturnToPatrol();
+				return true;
+			}
+			return false;
 		}));
 }
 
 StateGameObject::~StateGameObject() {
+	
 	delete stateMachine;
+	delete patrolState;
+	delete alertState;
 }
 
 void StateGameObject::Update(float dt) {
@@ -186,6 +194,24 @@ void StateGameObject::ChasePlayer(float dt) {
 	Vector3 direction = Vector::Normalise(toPlayer);
 	TurnToFace(direction);
 	GetPhysicsObject()->AddForce(direction * moveSpeed * 1.0f * dt); // Move faster when chasing
+}
+
+void StateGameObject::ReturnToPatrol() {
+	// Find the nearest waypoint
+	float minDistance = std::numeric_limits<float>::max();
+	int nearestWaypointIndex = 0;
+	Vector3 currentPosition = GetTransform().GetPosition();
+
+	for (int i = 0; i < waypoints.size(); ++i) {
+		float distance = Vector::Length(waypoints[i] - currentPosition);
+		if (distance < minDistance) {
+			minDistance = distance;
+			nearestWaypointIndex = i;
+		}
+	}
+
+	currentWaypointIndex = nearestWaypointIndex;
+	chaseTimer = 0.0f;
 }
 
 bool StateGameObject::DetectPlayer(float detectionRange, float fanAngle) {
