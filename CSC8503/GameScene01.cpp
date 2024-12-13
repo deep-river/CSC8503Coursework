@@ -174,11 +174,11 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(positionConstraintR);
 	world->AddConstraint(orientationConstraintR);
 
-	//推箱子 todo:设为绿色
-	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
-	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
-	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
-	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	//推箱子 OBB vs Sphere(player volume) collision
+	AddOBBCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddOBBCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddOBBCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddOBBCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 
 	//简单巡逻敌人，巡逻路径为(-75, 2, -80) - (-75, 2, 80)
 	simplePatrolObject = AddStateObjectToWorld(Vector3(-75, 5, 0));

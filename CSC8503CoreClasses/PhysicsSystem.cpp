@@ -229,6 +229,7 @@ In tutorial 5, we start determining the correct response to a collision,
 so that objects separate back out. 
 
 */
+// Collision resolution - impulse method
 void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
 	PhysicsObject* physA = a.GetPhysicsObject();
 	PhysicsObject* physB = b.GetPhysicsObject();
@@ -260,7 +261,7 @@ void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, Collis
 	Vector3 inertiaB = Vector::Cross(physB->GetInertiaTensor() * Vector::Cross(relativeB, p.normal), relativeB);
 	float angularEffect = Vector::Dot(inertiaA + inertiaB, p.normal);
 	//float cRestitution = 0.66f; //Coefficient of restitution
-	float cRestitution = physA->GetElasticity() * physB->GetElasticity();
+	float cRestitution = physA->GetElasticity() * physB->GetElasticity(); //multiple coefficient of restitution
 	float j = (-(1.0f + cRestitution) * impulseForce) / (totalMass + angularEffect);
 	//std::cout << "Impulse collision force: " << j << std::endl;
 	Vector3 fullImpulse = p.normal * j;
