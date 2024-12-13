@@ -140,9 +140,9 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 
 	// 3. Create open areas for items
 	// Left open area
-	AddCubeToWorld(Vector3(10, 2.5, -30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.7f, 0.3f, 1.0f));
+	AddCubeToWorld(Vector3(10, 2.5, -30), Vector3(blockSize * 1.0, 5, blockSize * 1.0), 0)->GetRenderObject()->SetColour(Vector4(0.7f, 0.7f, 0.3f, 1.0f));
 	// Right open area
-	AddCubeToWorld(Vector3(70, 2.5, 30), Vector3(blockSize * 1.5, 5, blockSize * 1.5), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
+	AddCubeToWorld(Vector3(70, 2.5, 30), Vector3(blockSize * 1.0, 5, blockSize * 1.0), 0)->GetRenderObject()->SetColour(Vector4(0.3f, 0.7f, 0.7f, 1.0f));
 
 	//出生点走道与背后围墙
 	AddCubeToWorld(Vector3(-140, 5, -50), Vector3(blockSize * 6, 5, blockSize * 4), 0);
@@ -156,6 +156,7 @@ void GameScene01::InitTerrain(int width, int height, float cellSize) {
 void GameScene01::InitGameObjects() {
 	//门
 	GameObject* doorLeft = AddCubeToWorld(Vector3(-150, 3, -4), Vector3(1, 2, 4), 60);
+	doorLeft->GetRenderObject()->SetColour(Debug::GREEN);
 	GameObject* posLeft = AddCubeToWorld(Vector3(-150, 3, -9), Vector3(1, 2, 1), 0);
 
 	OrientationConstraint* orientationConstraintL = new OrientationConstraint(posLeft, doorLeft, PI / 8.0f); //旋转约束为90度
@@ -164,6 +165,7 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(orientationConstraintL);
 
 	GameObject* doorRight = AddCubeToWorld(Vector3(-150, 3, 4), Vector3(1, 2, 4), 60);
+	doorRight->GetRenderObject()->SetColour(Debug::GREEN);
 	GameObject* posRight = AddCubeToWorld(Vector3(-150, 3, 9), Vector3(1, 2, 1), 0);
 
 	OrientationConstraint* orientationConstraintR = new OrientationConstraint(posRight, doorRight, PI / 8.0f); //旋转约束为90度
@@ -172,10 +174,10 @@ void GameScene01::InitGameObjects() {
 	world->AddConstraint(orientationConstraintR);
 
 	//推箱子 todo:设为绿色
-	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1);
-	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1);
-	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1);
-	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1);
+	AddCubeToWorld(Vector3(-120, 5, -6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddCubeToWorld(Vector3(-120, 5, -2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddCubeToWorld(Vector3(-120, 5, 2), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
+	AddCubeToWorld(Vector3(-120, 5, 6), Vector3(2, 2, 2), 1)->GetRenderObject()->SetColour(Debug::GREEN);
 
 	//AddEnemyToWorld(Vector3(5, 5, 0));
 	//巡逻路径为(-75, 2, -80) - (-75, 2, 80)
@@ -342,7 +344,7 @@ PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 	float inverseMass = 10.0f;
 
 	PlayerObject* character = new PlayerObject("Player");
-	SphereVolume* volume = new SphereVolume(1.0f);
+	SphereVolume* volume = new SphereVolume(0.5f);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
 	character->GetTransform().SetScale(Vector3(meshSize, meshSize, meshSize)).SetPosition(position);
