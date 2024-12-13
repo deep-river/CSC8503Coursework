@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include <GameWorld.h>
 
+#define PI 3.14159265358979323846
+#define RAD_TO_DEG (180.0 / PI)
 
 namespace NCL {
     namespace CSC8503 {

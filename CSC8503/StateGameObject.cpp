@@ -114,23 +114,41 @@ void StateGameObject::MoveToWaypoint(float dt) {
 
 	Vector3 direction = Vector::Normalise(toWaypoint);
 	// Turn to face the direction of movement
-	//TurnToFace(direction);
+	TurnToFace(direction);
 	GetPhysicsObject()->AddForce(direction * moveSpeed * dt);
 }
 
 void StateGameObject::TurnToFace(Vector3& targetDirection) {
+	if (Vector::Length(targetDirection) < 0.001f) {
+		// 避免处理接近零的向量
+		return;
+	}
+
 	Vector3 currentForward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
-	//Vector3 desiredForward = Vector::Normalise(targetDirection);
+	Vector3 desiredForward = Vector::Normalise(targetDirection);
+
+	// 检查向量是否已经对齐
+	/*if (Vector::Length(currentForward - desiredForward) < 0.001f) {
+		return;
+	}*/
 
 	// 计算旋转轴和角度
-	Vector3 rotationAxis = Vector::Normalise(Vector::Cross(currentForward, targetDirection));
-	float rotationAngle = acos(Vector::Dot(currentForward, targetDirection));
+	Vector3 rotationAxis = Vector::Normalise(Vector::Cross(currentForward, desiredForward));
+
+	// 使用安全的点积计算
+	float dotProduct = Vector::Dot(currentForward, desiredForward);
+	dotProduct = std::max(-1.0f, std::min(1.0f, dotProduct)); // 将点积限制在 [-1, 1] 范围内
+	float rotationAngle = std::acos(dotProduct);
 
 	// 创建旋转四元数
-	Quaternion rotationQuaternion = Quaternion::AxisAngleToQuaterion(rotationAxis, rotationAngle * (180.0 / 3.14159265358979323846));
+	Quaternion rotationQuaternion = Quaternion::AxisAngleToQuaterion(rotationAxis, rotationAngle * RAD_TO_DEG);
 
 	// 应用旋转
-	GetTransform().SetOrientation(GetTransform().GetOrientation() * rotationQuaternion);
+	Quaternion currentOrientation = GetTransform().GetOrientation();
+	Quaternion newOrientation = currentOrientation * rotationQuaternion;
+	newOrientation.Normalise(); // 确保四元数是单位四元数
+
+	GetTransform().SetOrientation(newOrientation);
 }
 
 
