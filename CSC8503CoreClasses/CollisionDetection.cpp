@@ -574,6 +574,65 @@ bool CollisionDetection::SphereCapsuleIntersection(
 	return false;
 }
 
+bool CollisionDetection::OBBCapsuleIntersection(
+	const OBBVolume& volumeA, const Transform& worldTransformA,
+	const CapsuleVolume& volumeB, const Transform& worldTransformB,
+	CollisionInfo& collisionInfo) {
+
+	// Get OBB properties
+	Vector3 obbCenter = worldTransformA.GetPosition();
+	Vector3 obbHalfSize = volumeA.GetHalfDimensions();
+
+	Quaternion orientation = worldTransformA.GetOrientation();
+	Matrix3 obbRotation = Quaternion::RotationMatrix<Matrix3>(orientation);
+
+	// Get capsule properties
+	Vector3 capsuleStart = worldTransformB.GetPosition();
+	Vector3 capsuleEnd = capsuleStart + (worldTransformB.GetOrientation() * Vector3(0, volumeB.GetHalfHeight() * 2, 0));
+	float capsuleRadius = volumeB.GetRadius();
+
+	// Transform capsule into OBB's local space
+	Matrix3 invObbRotation = Matrix::Transpose(obbRotation);
+	Vector3 localCapsuleStart = invObbRotation * (capsuleStart - obbCenter);
+	Vector3 localCapsuleEnd = invObbRotation * (capsuleEnd - obbCenter);
+
+	// Find the closest point on the capsule line segment to the OBB center
+	Vector3 capsuleDir = localCapsuleEnd - localCapsuleStart;
+	float capsuleLength = Vector::Length(capsuleDir);
+	Vector3 capsuleDirNorm = capsuleDir / capsuleLength;
+
+	float t = Vector::Dot(-localCapsuleStart, capsuleDirNorm);
+	t = std::max(0.0f, std::min(capsuleLength, t));
+
+	Vector3 closestPoint = localCapsuleStart + capsuleDirNorm * t;
+
+	// Clamp the closest point to the OBB's surface
+	Vector3 clampedPoint;
+	clampedPoint.x = std::max(-obbHalfSize.x, std::min(obbHalfSize.x, closestPoint.x));
+	clampedPoint.y = std::max(-obbHalfSize.y, std::min(obbHalfSize.y, closestPoint.y));
+	clampedPoint.z = std::max(-obbHalfSize.z, std::min(obbHalfSize.z, closestPoint.z));
+
+	// Check for intersection
+	Vector3 delta = closestPoint - clampedPoint;
+	float distanceSquared = Vector::LengthSquared(delta);
+
+	if (distanceSquared <= capsuleRadius * capsuleRadius) {
+		float distance = std::sqrt(distanceSquared);
+		float penetration = capsuleRadius - distance;
+
+		Vector3 normal = Vector::Normalise(delta);
+		Vector3 worldNormal = obbRotation * normal;
+
+		Vector3 localA = obbRotation * clampedPoint;
+		Vector3 localB = worldTransformB.GetOrientation() * Vector3(0, -volumeB.GetHalfHeight(), 0) + worldNormal * capsuleRadius;
+
+		collisionInfo.AddContactPoint(localA, localB, worldNormal, penetration);
+		return true;
+	}
+
+	return false;
+}
+
 bool CollisionDetection::OBBIntersection(const OBBVolume& volumeA, const Transform& worldTransformA,
 	const OBBVolume& volumeB, const Transform& worldTransformB, CollisionInfo& collisionInfo) {
 	Vector3 sizeA = volumeA.GetHalfDimensions();
