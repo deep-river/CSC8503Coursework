@@ -435,7 +435,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position) {
 }
 
 StateGameObject* TutorialGame::AddStateObjectToWorld(const Vector3& position) {
-	StateGameObject* apple = new StateGameObject();
+	StateGameObject* apple = new StateGameObject(world);
 
 	SphereVolume* volume = new SphereVolume(0.5f);
 	apple->SetBoundingVolume((CollisionVolume*)volume);

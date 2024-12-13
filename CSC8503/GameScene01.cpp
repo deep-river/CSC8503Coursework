@@ -360,7 +360,7 @@ PlayerObject* GameScene01::AddPlayerToWorld(const Vector3& position) {
 }
 
 StateGameObject* GameScene01::AddStateObjectToWorld(const Vector3& position) {
-	StateGameObject* apple = new StateGameObject();
+	StateGameObject* apple = new StateGameObject(world);
 
 	SphereVolume* volume = new SphereVolume(2.5f);
 	apple->SetBoundingVolume((CollisionVolume*)volume);
