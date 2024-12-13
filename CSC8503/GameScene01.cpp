@@ -202,6 +202,23 @@ void GameScene01::InitGameObjects() {
 	AddBonusToWorld(Vector3(-90, 5, 0));
 	AddBonusToWorld(Vector3(-100, 5, 0));
 	AddBonusToWorld(Vector3(-110, 5, 0));
+
+	AddBonusToWorld(Vector3(-10, 5, -25));
+	AddBonusToWorld(Vector3(-10, 5, -15));
+	AddBonusToWorld(Vector3(-10, 5, -5));
+	AddBonusToWorld(Vector3(-10, 5, 5));
+	AddBonusToWorld(Vector3(-10, 5, 15));
+	AddBonusToWorld(Vector3(-10, 5, 25));
+
+	AddBonusToWorld(Vector3(0, 5, 20));
+	AddBonusToWorld(Vector3(10, 5, 20));
+	AddBonusToWorld(Vector3(20, 5, 20));
+	AddBonusToWorld(Vector3(30, 5, 20));
+
+	AddBonusToWorld(Vector3(0, 5, -15));
+	AddBonusToWorld(Vector3(10, 5, -15));
+	AddBonusToWorld(Vector3(20, 5, -15));
+	AddBonusToWorld(Vector3(30, 5, -15));
 }
 
 void GameScene01::InitPlayer() {

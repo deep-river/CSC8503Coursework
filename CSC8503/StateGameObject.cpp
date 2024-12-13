@@ -9,7 +9,9 @@
 using namespace NCL;
 using namespace CSC8503;
 
-StateGameObject::StateGameObject(GameWorld* world) {
+StateGameObject::StateGameObject(GameWorld* world, const std::string& objectName) : GameObject(objectName) {
+	SetLayer(Layer::Enemy);
+	
 	counter = 0.0f;
 	moveSpeed = 1500.0f;
 	waypoints.clear();

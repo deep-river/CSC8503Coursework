@@ -8,7 +8,7 @@ namespace NCL {
         class StateMachine;
         class StateGameObject : public GameObject  {
         public:
-            StateGameObject(GameWorld* world);
+            StateGameObject(GameWorld* world, const std::string& objectName = "Player");
             ~StateGameObject();
 
             virtual void Update(float dt);
